@@ -152,13 +152,13 @@
     });
 
     /* RECONFIG ASSIST */
-    define("aircraft/show/[0-9]+/reconfigure", function() {
+    define("aircraft/show/[0-9]+/reconfigure|aircraft/buy/new/[0-9]+/[^/]+/.*", function() {
         $(`<style type='text/css'>
             #reconfigBox { float: right; width: 225px; height: 400px; overflow-y: auto; border: 1px solid #aaa; border-radius: 4px; margin-right: 2px }
             #reconfigBox::-webkit-scrollbar { width: 10px }
             #reconfigBox::-webkit-scrollbar-track { background-color: #f1f1f1; border-top-right-radius: 4px; border-bottom-right-radius: 4px }
             #reconfigBox::-webkit-scrollbar-thumb { background-color: #c1c1c1 }
-            .route-title { width:100%; height:23px; display:flex; align-items: center; background-color:#bde9ff }
+            .route-title { width: 100%; height: 23px; display: flex; align-items: center; background-color: #bde9ff; color: #585d69 }
             .route-name { font-weight: bold; padding-left: 5px }
             .route-dist { flex: 1; text-align: right; font-weight: bold; padding-right: 5px }
             .pax-line { display: flex; align-items: center; padding: 4px 5px }
@@ -168,21 +168,48 @@
             .num-pos { color: #8ecb47 }
             .num-neg { color: #da4e28 }
            </style>`).appendTo("head");
-
-        const currentAircraftId = pageUrl.match(/aircraft\/show\/([0-9]+)\/reconfigure/)[1];
         const reconfigBox = $("<div id='reconfigBox'></div>");
-        $("#box2").after(reconfigBox);
 
         loadNetworkData().then(function(data) {
-            console.log(data);
+            let currentAircraftSpeed;
+            let currentAircraftRange;
+            let currentAircraftCategory;
+            let ownAircraftMatch = pageUrl.match(/aircraft\/show\/([0-9]+)\/reconfigure/);
 
-            const currentAircraft = data.aircraftMap[currentAircraftId];
+            if (ownAircraftMatch) {
+                const currentAircraftId = ownAircraftMatch[1];
+                currentAircraftSpeed = data.aircraftMap[currentAircraftId].speed;
+                currentAircraftRange = data.aircraftMap[currentAircraftId].range;
+                currentAircraftCategory = data.aircraftMap[currentAircraftId].category;
+            } else {
+                const aircraftPurchaseBox = $(".aircraftPurchaseBox");
+                currentAircraftSpeed = parseInt(
+                    aircraftPurchaseBox
+                        .find("li:contains('Speed') b")
+                        .text()
+                        .replace(/[^0-9]/g, "")
+                );
+                currentAircraftRange = parseInt(
+                    aircraftPurchaseBox
+                        .find("li:contains('Range') b")
+                        .text()
+                        .replace(/[^0-9]/g, "")
+                );
+                currentAircraftCategory = parseInt(
+                    aircraftPurchaseBox
+                        .find(".title img")
+                        .attr("alt")
+                        .replace("cat", "")
+                );
+                reconfigBox.css({ height: "300px", "margin-top": "70px" });
+            }
+
             const possibleRoutes = data.routeList
-                .filter(route => route.distance <= currentAircraft.range && route.category >= currentAircraft.category)
+                .filter(route => route.distance <= currentAircraftRange && route.category >= currentAircraftCategory)
                 .sort((r1, r2) => r2.distance - r1.distance);
 
             possibleRoutes.forEach(route => {
-                const flightTime = calculateFlightTime(route.distance, currentAircraft.speed, data.flightParameters);
+                const flightTime = calculateFlightTime(route.distance, currentAircraftSpeed, data.flightParameters);
                 const flightTimeH = (flightTime / 60) | 0;
                 const flightTimeM = flightTime % 60;
 
@@ -235,6 +262,8 @@
                     reconfigBox.append(paxBox);
                 });
             });
+
+            $("#box2").after(reconfigBox);
         });
     });
 
