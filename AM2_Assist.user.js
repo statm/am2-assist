@@ -149,7 +149,7 @@
                 `Next star: $${STAR_TABLE[stars].toLocaleString()}`
             ];
             if (stars > 0) {
-                spTooltipText.unshift(`Last rank: $${STAR_TABLE[stars - 1].toLocaleString()}`);
+                spTooltipText.unshift(`Last star: $${STAR_TABLE[stars - 1].toLocaleString()}`);
             }
             $("#spProgress")
                 .attr("title", spTooltipText.join("\n"))
