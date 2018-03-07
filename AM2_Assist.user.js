@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AM2 Assist
 // @namespace    http://tampermonkey.net/
-// @version      0.4
+// @version      0.5
 // @description  Airlines Manager 2 Assist
 // @author       statm
 // @license      MIT
@@ -150,6 +150,96 @@
             $("#spProgressBar > div").attr("class", "progressbarValue");
         });
     });
+
+    /* RECONFIG ASSIST */
+    define("aircraft/show/[0-9]+/reconfigure", function() {
+        $(`<style type='text/css'>
+            #reconfigBox { float: right; width: 225px; height: 400px; overflow-y: auto; border: 1px solid #aaa; border-radius: 4px; margin-right: 2px }
+            #reconfigBox::-webkit-scrollbar { width: 10px }
+            #reconfigBox::-webkit-scrollbar-track { background-color: #f1f1f1; border-top-right-radius: 4px; border-bottom-right-radius: 4px }
+            #reconfigBox::-webkit-scrollbar-thumb { background-color: #c1c1c1 }
+            .route-title { width:100%; height:23px; display:flex; align-items: center; background-color:#bde9ff }
+            .route-name { font-weight: bold; padding-left: 5px }
+            .route-dist { flex: 1; text-align: right; font-weight: bold; padding-right: 5px }
+            .pax-line { display: flex; align-items: center; padding: 4px 5px }
+            .pax-line span { display: inline-block; text-align: right }
+            .day-box { width: 58px; margin-right: 4px }
+            .pax-box { width: 36px; font-weight: bold }
+            .num-pos { color: #8ecb47 }
+            .num-neg { color: #da4e28 }
+           </style>`).appendTo("head");
+
+        const currentAircraftId = pageUrl.match(/aircraft\/show\/([0-9]+)\/reconfigure/)[1];
+        const reconfigBox = $("<div id='reconfigBox'></div>");
+        $("#box2").after(reconfigBox);
+
+        loadNetworkData().then(function(data) {
+            console.log(data);
+
+            const currentAircraft = data.aircraftMap[currentAircraftId];
+            const possibleRoutes = data.routeList
+                .filter(route => route.distance <= currentAircraft.range && route.category >= currentAircraft.category)
+                .sort((r1, r2) => r2.distance - r1.distance);
+
+            possibleRoutes.forEach(route => {
+                const flightTime = calculateFlightTime(route.distance, currentAircraft.speed, data.flightParameters);
+                const flightTimeH = (flightTime / 60) | 0;
+                const flightTimeM = flightTime % 60;
+
+                const titleBox = $(
+                    `<div class='route-title'>
+                        <span class='route-name'>${route.name}</span>
+                        <span class='route-dist'>${route.distance}km (${flightTimeH}h${flightTimeM})</span>
+                     </div>`
+                );
+                reconfigBox.append(titleBox);
+
+                const paxGroup = [];
+                for (let i = 0; i < route.remaining.length; ++i) {
+                    const currentPax = route.remaining[i];
+                    if (paxGroup.length == 0) {
+                        paxGroup.push({ days: [i], pax: currentPax });
+                        continue;
+                    }
+
+                    const lastPax = paxGroup[paxGroup.length - 1];
+                    if (
+                        currentPax.eco == lastPax.pax.eco &&
+                        currentPax.bus == lastPax.pax.bus &&
+                        currentPax.first == lastPax.pax.first &&
+                        currentPax.cargo == lastPax.pax.cargo
+                    ) {
+                        lastPax.days.push(i);
+                    } else {
+                        paxGroup.push({ days: [i], pax: currentPax });
+                    }
+                }
+
+                const getPaxTextClass = pax => (pax >= 0 ? "num-pos" : "num-neg");
+
+                paxGroup.forEach(paxSeg => {
+                    const dayText =
+                        paxSeg.days.length == 1
+                            ? `${DAYS_SHORT[paxSeg.days[0]]}`
+                            : `${DAYS_SHORT[paxSeg.days[0]]}-${DAYS_SHORT[paxSeg.days[paxSeg.days.length - 1]]}`;
+                    const paxData = paxSeg.pax;
+                    const paxBox = $(
+                        `<div class='pax-line'>
+                            <span class='day-box'>${dayText}</span>
+                            <span class='pax-box ${getPaxTextClass(paxData.eco)}'>${paxData.eco}</span>
+                            <span class='pax-box ${getPaxTextClass(paxData.bus)}'>${paxData.bus}</span>
+                            <span class='pax-box ${getPaxTextClass(paxData.first)}'>${paxData.first}</span>
+                            <span class='pax-box ${getPaxTextClass(paxData.cargo)}'>${paxData.cargo}T</span>
+                         </div>`
+                    );
+                    reconfigBox.append(paxBox);
+                });
+            });
+        });
+    });
+
+    /* HYPERSIM */
+    define("marketing/pricing/[0-9]+", function() {});
 
     // ========================================================
 
