@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AM2 Assist
 // @namespace    http://tampermonkey.net/
-// @version      0.5
+// @version      0.5.1
 // @description  Airlines Manager 2 Assist
 // @author       statm
 // @license      MIT
@@ -51,7 +51,7 @@
 
         function log(text) {
             logText += text;
-            logArea.val(logText);
+            logArea.val(logText).scrollTop(logArea[0].scrollHeight);
         }
 
         function play() {
@@ -143,8 +143,17 @@
                 value: spProgress
             });
             $("#spProgressText").html(`${spProgress.toFixed(1)}%`);
-            $("#spProgress").attr("title", `$${spValue.toLocaleString()} / $${STAR_TABLE[stars].toLocaleString()}`);
-            $("#spProgress").tooltip();
+
+            const spTooltipText = [
+                `Current SP: $${spValue.toLocaleString()}`,
+                `Next star: $${STAR_TABLE[stars].toLocaleString()}`
+            ];
+            if (stars > 0) {
+                spTooltipText.unshift(`Last rank: $${STAR_TABLE[stars - 1].toLocaleString()}`);
+            }
+            $("#spProgress")
+                .attr("title", spTooltipText.join("\n"))
+                .tooltip({ content: spTooltipText.join("<br/>") });
 
             $("#spProgressBar").attr("class", "progressbar");
             $("#spProgressBar > div").attr("class", "progressbarValue");
@@ -267,9 +276,13 @@
         });
     });
 
+    /* MAXIMIZE LOAN AMOUNT */
+    define("finances/bank/[0-9]+/stockMarket/request", function() {
+        $("#request_amount").val($("#request_amount").attr("data-amount"));
+    });
+
     /* HYPERSIM */
     define("marketing/pricing/[0-9]+", function() {});
-
     // ========================================================
 
     // ================ DATA EXTRACTORS =======================
@@ -382,7 +395,6 @@
             60;
         return airTime + logisticTime;
     }
-
     // ========================================================
 
     for (let k in modules) {
