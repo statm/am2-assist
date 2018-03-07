@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AM2 Assist
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      0.4
 // @description  Airlines Manager 2 Assist
 // @author       statm
 // @license      MIT
