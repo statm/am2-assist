@@ -4,7 +4,7 @@
 // @version      0.3
 // @description  Airlines Manager 2 Assist
 // @author       statm
-// @license      MIT
+// @license MIT
 // @match        http://www.airlines-manager.com/*
 // @grant        none
 // @updateURL    https://openuserjs.org/meta/statm/AM2_Assist.meta.js
