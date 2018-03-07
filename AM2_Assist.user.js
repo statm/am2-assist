@@ -154,7 +154,7 @@
     /* RECONFIG ASSIST */
     define("aircraft/show/[0-9]+/reconfigure|aircraft/buy/new/[0-9]+/[^/]+/.*", function() {
         $(`<style type='text/css'>
-            #reconfigBox { float: right; width: 225px; height: 400px; overflow-y: auto; border: 1px solid #aaa; border-radius: 4px; margin-right: 2px }
+            #reconfigBox { float: right; width: 225px; height: 400px; overflow-y: auto; border: 1px solid #aaa; border-radius: 4px; margin-right: 2px; background-color: #fff }
             #reconfigBox::-webkit-scrollbar { width: 10px }
             #reconfigBox::-webkit-scrollbar-track { background-color: #f1f1f1; border-top-right-radius: 4px; border-bottom-right-radius: 4px }
             #reconfigBox::-webkit-scrollbar-thumb { background-color: #c1c1c1 }
@@ -163,7 +163,7 @@
             .route-dist { flex: 1; text-align: right; font-weight: bold; padding-right: 5px }
             .pax-line { display: flex; align-items: center; padding: 4px 5px }
             .pax-line span { display: inline-block; text-align: right }
-            .day-box { width: 58px; margin-right: 4px }
+            .day-box { width: 58px; margin-right: 4px; color: #585d69 }
             .pax-box { width: 36px; font-weight: bold }
             .num-pos { color: #8ecb47 }
             .num-neg { color: #da4e28 }
