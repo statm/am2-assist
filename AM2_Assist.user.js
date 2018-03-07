@@ -7,7 +7,7 @@
 // @license      MIT
 // @match        http://www.airlines-manager.com/*
 // @grant        none
-// @updateURL    https://openuserjs.org/meta/statm/AM2_Assist.meta.js
+// @updateURL    https://github.com/statm/am2-assist/raw/master/AM2_Assist.user.js
 // ==/UserScript==
 
 (function() {
