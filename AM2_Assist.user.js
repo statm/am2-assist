@@ -172,7 +172,7 @@
 
     /* ENHANCE AIRCRAFT PROFIBILITY DETAIL */
     define(["aircraft/show/[0-9]", "aircraft/buy/new/[0-9]+/[^/]+/.*"], function() {
-        
+        //
     }, "ENHANCE AIRCRAFT PROFIBILITY DETAIL");
 
     /* RECONFIGURATION ASSIST */
@@ -343,45 +343,32 @@
     /* AIRCRAFT FILTERING */
     define(["aircraft/buy/rental/[^/]+", "aircraft/buy/new/[0-9]+/[^/]+"], function() {
         const filterUnavailableCheckBox = $(
-            `<div>
-                <h4>Filter unavailable aircrafts</h4>
-                <input type="checkbox" id="toggleAircraftsDisplay">
-            </div>
-            `
+            `<div style="margin-top:3px"><label><input type="checkbox" id="toggleAircraftsDisplay" style="margin-right:9px;vertical-align:middle">Filter unavailable aircrafts</label></div>`
         );
         $("form#aircraftFilterForm").append(filterUnavailableCheckBox);
 
-        $("select#lineListSelect").change(function() {
-            toggleAircraftAvailability($("input#toggleAircraftsDisplay").prop('checked'));
-        });
+        $("select#lineListSelect").change(toggleAircraftAvailability);
+        $("input#toggleAircraftsDisplay").click(toggleAircraftAvailability);
 
-        $("input#toggleAircraftsDisplay").click(function() {
-            toggleAircraftAvailability($(this).prop('checked'));
-        });
-
-        function isFlightAvailable(aircraftPurchaseBox) {
-            if (aircraftPurchaseBox.hasClass("disabled-research")) {
-                // research is not unlocked
-                return false;
-            } else if (aircraftPurchaseBox.hasClass("disabled")) {
-                // incapable to perform the flight due to milage
-                return false;
-            }
-            return true;
+        function isAircraftAvailable(aircraftPurchaseBox) {
+            return !aircraftPurchaseBox.hasClass("disabled-research") && !aircraftPurchaseBox.hasClass("disabled");
         }
 
-        function toggleAircraftAvailability(hideUnavailable) {
-            $(".aircraftList").find(".aircraftPurchaseBox").each(function(){
-                if (!isFlightAvailable($(this))) {
-                    if (hideUnavailable) {
+        function toggleAircraftAvailability() {
+            $(".aircraftList")
+                .find(".aircraftPurchaseBox")
+                .each(function() {
+                    if (isAircraftAvailable($(this))) {
+                        $(this).show();
+                        return;
+                    }
+
+                    if ($("input#toggleAircraftsDisplay").prop("checked")) {
                         $(this).hide();
                     } else {
                         $(this).show();
                     }
-                } else {
-                    $(this).show();
-                }
-            });
+                });
         }
     }, "AIRCRAFT FILTERING");
 
