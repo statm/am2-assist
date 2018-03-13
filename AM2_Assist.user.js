@@ -285,6 +285,32 @@
 
     /* PRICE PER SEAT */
     define("aircraft/buy/rental/[^/]+|aircraft/buy/new/[0-9]+/[^/]+", function() {
+        const filterUnavailableCheckBox = $(
+            `<div>
+                <h4>Filter unavailable aircrafts</h4>
+                <input type="checkbox" id="toggleAircraftsDisplay">
+            </div>
+            `
+        );
+
+        $("form#aircraftFilterForm").append(filterUnavailableCheckBox);
+
+        $("input#toggleAircraftsDisplay")
+            .click(function() {
+                toggleUnavailableAircrafts(this);
+            });
+
+        function toggleUnavailableAircrafts(checkbox) {
+                $(".aircraftList").find(".aircraftPurchaseBox").each(function(){
+                    if($(this).hasClass("disabled-research")) {
+                        if (checkbox.checked) {
+                            $(this).hide();
+                        } else {
+                            $(this).show();
+                        }
+                    }
+                });
+        }
         $(".aircraftPurchaseBox").each(function() {
             const paxBox = $(this).find("li:contains('Seats') b");
             if (paxBox.length == 0) {
