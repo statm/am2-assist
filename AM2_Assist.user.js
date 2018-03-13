@@ -170,6 +170,11 @@
         });
     }, "STAR PROGRESS BAR");
 
+    /* ENHANCE AIRCRAFT PROFIBILITY DETAIL */
+    define(["aircraft/show/[0-9]", "aircraft/buy/new/[0-9]+/[^/]+/.*"], function() {
+        
+    }, "ENHANCE AIRCRAFT PROFIBILITY DETAIL");
+
     /* RECONFIGURATION ASSIST */
     define(["aircraft/show/[0-9]+/reconfigure", "aircraft/buy/new/[0-9]+/[^/]+/.*"], function() {
         $(`<style type='text/css'>
@@ -344,27 +349,39 @@
             </div>
             `
         );
-
         $("form#aircraftFilterForm").append(filterUnavailableCheckBox);
 
-        $("select#lineListLoaded").change(toggleUnavailableAircrafts($("input#filterUnavailableCheckBox")));
-
-        $("input#toggleAircraftsDisplay").click(function() {
-            toggleUnavailableAircrafts(this);
+        $("select#lineListSelect").change(function() {
+            toggleAircraftAvailability($("input#toggleAircraftsDisplay").prop('checked'));
         });
 
-        function toggleUnavailableAircrafts(checkbox) {
-            $(".aircraftList")
-                .find(".aircraftPurchaseBox")
-                .each(function() {
-                    if ($(this).hasClass("disabled-research") || $(this).hasClass("disabled")) {
-                        if (checkbox.checked) {
-                            $(this).hide();
-                        } else {
-                            $(this).show();
-                        }
+        $("input#toggleAircraftsDisplay").click(function() {
+            toggleAircraftAvailability($(this).prop('checked'));
+        });
+
+        function isFlightAvailable(aircraftPurchaseBox) {
+            if (aircraftPurchaseBox.hasClass("disabled-research")) {
+                // research is not unlocked
+                return false;
+            } else if (aircraftPurchaseBox.hasClass("disabled")) {
+                // incapable to perform the flight due to milage
+                return false;
+            }
+            return true;
+        }
+
+        function toggleAircraftAvailability(hideUnavailable) {
+            $(".aircraftList").find(".aircraftPurchaseBox").each(function(){
+                if (!isFlightAvailable($(this))) {
+                    if (hideUnavailable) {
+                        $(this).hide();
+                    } else {
+                        $(this).show();
                     }
-                });
+                } else {
+                    $(this).show();
+                }
+            });
         }
     }, "AIRCRAFT FILTERING");
 
