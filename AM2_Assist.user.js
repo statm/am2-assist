@@ -170,6 +170,11 @@
         });
     }, "STAR PROGRESS BAR");
 
+    /* ENHANCE AIRCRAFT PROFIBILITY DETAIL */
+    define(["aircraft/show/[0-9]", "aircraft/buy/new/[0-9]+/[^/]+/.*"], function() {
+        
+    }, "ENHANCE AIRCRAFT PROFIBILITY DETAIL");
+
     /* RECONFIGURATION ASSIST */
     define(["aircraft/show/[0-9]+/reconfigure", "aircraft/buy/new/[0-9]+/[^/]+/.*"], function() {
         $(`<style type='text/css'>
