@@ -345,7 +345,7 @@
         const filterUnavailableCheckBox = $(
             `<div style="margin-top:3px"><label><input type="checkbox" id="toggleAircraftsDisplay" style="margin-right:9px;vertical-align:middle">Filter unavailable aircrafts</label></div>`
         );
-        $("form#aircraftFilterForm").append(filterUnavailableCheckBox);
+        $("form#aircraftFilterForm, .rentalFilterBox form").append(filterUnavailableCheckBox);
 
         $("select#lineListSelect").change(toggleAircraftAvailability);
         $("input#toggleAircraftsDisplay").click(toggleAircraftAvailability);
@@ -355,20 +355,18 @@
         }
 
         function toggleAircraftAvailability() {
-            $(".aircraftList")
-                .find(".aircraftPurchaseBox")
-                .each(function() {
-                    if (isAircraftAvailable($(this))) {
-                        $(this).show();
-                        return;
-                    }
+            $(".aircraftPurchaseBox").each(function() {
+                if (isAircraftAvailable($(this))) {
+                    $(this).show();
+                    return;
+                }
 
-                    if ($("input#toggleAircraftsDisplay").prop("checked")) {
-                        $(this).hide();
-                    } else {
-                        $(this).show();
-                    }
-                });
+                if ($("input#toggleAircraftsDisplay").prop("checked")) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }
+            });
         }
     }, "AIRCRAFT FILTERING");
 
