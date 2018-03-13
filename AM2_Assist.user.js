@@ -295,6 +295,8 @@
 
         $("form#aircraftFilterForm").append(filterUnavailableCheckBox);
 
+        $("select#lineListLoaded").change(filterUnavailableCheckBox($("input#filterUnavailableCheckBox")));
+
         $("input#toggleAircraftsDisplay")
             .click(function() {
                 toggleUnavailableAircrafts(this);
