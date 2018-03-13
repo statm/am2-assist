@@ -73,7 +73,7 @@
 
                 if (data.gain) {
                     if (data.gain.gainLabel.endsWith(" R$")) {
-                        data.gain.gainLabel = "R$ " + data.gain.gainLabel.substr(0, data.gain.gainLabel.length - 3);
+                        data.gain.gainLabel = "+R$ " + data.gain.gainLabel.substr(1, data.gain.gainLabel.length - 3);
                     }
                     log(`${data.gain.gainLabel}\n`);
 
