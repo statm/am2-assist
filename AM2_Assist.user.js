@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AM2 Assist
 // @namespace    http://tampermonkey.net/
-// @version      0.5.1
+// @version      0.5.2
 // @description  Airlines Manager 2 Assist
 // @author       statm
 // @license      MIT
@@ -29,12 +29,12 @@
         let gameCount = 0;
         let logText = "";
         const harvest = {};
-        const harvestNames = {
-            t: "Tickets",
-            rd: "R$",
-            d: "$",
-            tr: "TC"
-        };
+        const harvestNames = [
+            ["d", "$"],
+            ["rd", "R$"],
+            ["t", "Tickets"],
+            ["tr", "TC"]
+        ];
 
         $("#gameAlsoOnMobile").remove();
 
@@ -69,6 +69,9 @@
                 }
 
                 if (data.gain) {
+                    if (data.gain.gainLabel.endsWith(" R$")) {
+                        data.gain.gainLabel = "R$ " + data.gain.gainLabel.substr(0, data.gain.gainLabel.length - 3);
+                    }
                     log(`${data.gain.gainLabel}\n`);
 
                     if (!(data.gain.gainType in harvest)) {
@@ -82,8 +85,12 @@
                 if (!data.isAllowToPlay || data.nbOfTickets == 0) {
                     playing = false;
                     log(`================== Ended ==================\n`);
-                    for (let t in harvest) {
-                        log(`${harvestNames[t]}: ${harvest[t].toLocaleString()}\n`);
+                    for (let i = 0; i < harvestNames.length; ++i) {
+                        const harvestName = harvestNames[i][0];
+                        const harvestDisplayName = harvestNames[i][1];
+                        if (harvest[harvestName]) {
+                            log(`${harvestDisplayName}: ${harvest[harvestName].toLocaleString()}\n`);
+                        }
                     }
                 } else {
                     setTimeout(play, 500);
