@@ -14,6 +14,7 @@
 (function() {
     "use strict";
 
+    const VERSION = "0.5.2";
     const ROOT_URL = "http://www.airlines-manager.com/";
     const DAYS_SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -479,7 +480,7 @@
     }
     // ========================================================
 
-    const functionsToRun = new Set();
+    console.log(`===== AM2 Assist ${VERSION} =====`);
     for (const k in modules) {
         if (pageUrl.match(new RegExp(k))) {
             for (const funcPair of modules[k]) {
