@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AM2 Assist
 // @namespace    http://tampermonkey.net/
-// @version      0.5.1
+// @version      0.5.2
 // @description  Airlines Manager 2 Assist
 // @author       statm
 // @license      MIT
@@ -29,12 +29,7 @@
         let gameCount = 0;
         let logText = "";
         const harvest = {};
-        const harvestNames = {
-            t: "Tickets",
-            rd: "R$",
-            d: "$",
-            tr: "TC"
-        };
+        const harvestNames = [["d", "$"], ["rd", "R$"], ["t", "Tickets"], ["tr", "TC"]];
 
         $("#gameAlsoOnMobile").remove();
 
@@ -69,6 +64,9 @@
                 }
 
                 if (data.gain) {
+                    if (data.gain.gainLabel.endsWith(" R$")) {
+                        data.gain.gainLabel = "R$ " + data.gain.gainLabel.substr(0, data.gain.gainLabel.length - 3);
+                    }
                     log(`${data.gain.gainLabel}\n`);
 
                     if (!(data.gain.gainType in harvest)) {
@@ -82,8 +80,12 @@
                 if (!data.isAllowToPlay || data.nbOfTickets == 0) {
                     playing = false;
                     log(`================== Ended ==================\n`);
-                    for (let t in harvest) {
-                        log(`${harvestNames[t]}: ${harvest[t].toLocaleString()}\n`);
+                    for (let i = 0; i < harvestNames.length; ++i) {
+                        const harvestName = harvestNames[i][0];
+                        const harvestDisplayName = harvestNames[i][1];
+                        if (harvest[harvestName]) {
+                            log(`${harvestDisplayName}: ${harvest[harvestName].toLocaleString()}\n`);
+                        }
                     }
                 } else {
                     setTimeout(play, 500);
@@ -279,6 +281,50 @@
     /* MAXIMIZE LOAN AMOUNT */
     define("finances/bank/[0-9]+/stockMarket/request", function() {
         $("#request_amount").val($("#request_amount").attr("data-amount"));
+    });
+
+    /* PRICE PER SEAT */
+    define("aircraft/buy/rental/[^/]+|aircraft/buy/new/[0-9]+/[^/]+", function() {
+        $(".aircraftPurchaseBox").each(function() {
+            const paxBox = $(this).find("li:contains('Seats') b");
+            if (paxBox.length == 0) {
+                // cargo, pass through
+                return;
+            }
+            assert(paxBox.length == 1);
+
+            const numPax = parseInt(paxBox.text().replace(/[^0-9]/g, ""));
+            if (numPax == 0) {
+                // cargo, pass through
+                return;
+            }
+
+            $(this).css({ height: "195px" });
+            $(this)
+                .find(".content")
+                .css({ height: "115px" });
+            $(this)
+                .find(".aircraftPrice")
+                .css({ "max-width": "180px" });
+
+            const priceBox = $(this).find("strong.discountTotalPrice, span:contains(' / Week') b");
+            assert(priceBox.length == 1);
+
+            const aircraftQuantitySelect = $(this).find("select.quantitySelect");
+
+            const pricePerPaxBox = $("<span/>");
+            priceBox.parent().append(pricePerPaxBox);
+
+            const updatePricePerPax = function() {
+                const aircraftQuantity = aircraftQuantitySelect.length == 1 ? aircraftQuantitySelect.val() : 1;
+                const price = parseInt(priceBox.text().replace(/[^0-9]/g, "")) / aircraftQuantity;
+                const pricePerSeatText = (price / numPax).toLocaleString(undefined, { maximumFractionDigits: 0 });
+                pricePerPaxBox.html(`• Price per seat : <strong>${pricePerSeatText} $</strong>`);
+            };
+
+            new MutationObserver(updatePricePerPax).observe(priceBox[0], { childList: true });
+            updatePricePerPax();
+        });
     });
 
     /* HYPERSIM */
