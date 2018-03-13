@@ -302,7 +302,7 @@
 
         function toggleUnavailableAircrafts(checkbox) {
                 $(".aircraftList").find(".aircraftPurchaseBox").each(function(){
-                    if($(this).hasClass("disabled-research")) {
+                    if($(this).hasClass("disabled-research") || $(this).hasClass("disabled")) {
                         if (checkbox.checked) {
                             $(this).hide();
                         } else {
