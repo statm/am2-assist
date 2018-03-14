@@ -74,6 +74,8 @@
                 if (data.gain) {
                     if (data.gain.gainLabel.endsWith(" R$")) {
                         data.gain.gainLabel = "+R$ " + data.gain.gainLabel.substr(1, data.gain.gainLabel.length - 3);
+                    } else if (data.gain.gainLabel.endsWith(" $")) {
+                        data.gain.gainLabel = "+$ " + data.gain.gainLabel.substr(1, data.gain.gainLabel.length - 2);
                     }
                     log(`${data.gain.gainLabel}\n`);
 
