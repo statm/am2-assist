@@ -1,9 +1,10 @@
 // ==UserScript==
 // @name         AM2 Assist
 // @namespace    http://tampermonkey.net/
-// @version      0.5.1
+// @version      0.5.2
 // @description  Airlines Manager 2 Assist
 // @author       statm
+// @contributor  henryzhou
 // @license      MIT
 // @match        http://www.airlines-manager.com/*
 // @grant        none
@@ -13,28 +14,30 @@
 (function() {
     "use strict";
 
+    const VERSION = "0.5.2";
     const ROOT_URL = "http://www.airlines-manager.com/";
     const DAYS_SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
     const pageUrl = window.location.href.replace(ROOT_URL, "");
     const modules = {};
-    function define(urlPattern, func) {
-        modules[urlPattern] = func;
+    function define(urlPatterns, func, name) {
+        for (const pattern of urlPatterns) {
+            if (!modules[pattern]) {
+                modules[pattern] = [];
+            }
+
+            modules[pattern].push([func, name]);
+        }
     }
 
     // ================ PAGE MODULES ==========================
     /* SLOT MACHINE AUTOMATION */
-    define("company/cockpitASous", function() {
+    define(["company/cockpitASous"], function() {
         let playing = false;
         let gameCount = 0;
         let logText = "";
         const harvest = {};
-        const harvestNames = {
-            t: "Tickets",
-            rd: "R$",
-            d: "$",
-            tr: "TC"
-        };
+        const harvestNames = [["d", "$"], ["rd", "R$"], ["t", "Tickets"], ["tr", "TC"]];
 
         $("#gameAlsoOnMobile").remove();
 
@@ -69,6 +72,11 @@
                 }
 
                 if (data.gain) {
+                    if (data.gain.gainLabel.endsWith(" R$")) {
+                        data.gain.gainLabel = "+R$ " + data.gain.gainLabel.substr(1, data.gain.gainLabel.length - 3);
+                    } else if (data.gain.gainLabel.endsWith(" $")) {
+                        data.gain.gainLabel = "+$ " + data.gain.gainLabel.substr(1, data.gain.gainLabel.length - 2);
+                    }
                     log(`${data.gain.gainLabel}\n`);
 
                     if (!(data.gain.gainType in harvest)) {
@@ -82,23 +90,27 @@
                 if (!data.isAllowToPlay || data.nbOfTickets == 0) {
                     playing = false;
                     log(`================== Ended ==================\n`);
-                    for (let t in harvest) {
-                        log(`${harvestNames[t]}: ${harvest[t].toLocaleString()}\n`);
+                    for (const harvestNamePair of harvestNames) {
+                        const harvestName = harvestNamePair[0];
+                        const harvestDisplayName = harvestNamePair[1];
+                        if (harvest[harvestName]) {
+                            log(`${harvestDisplayName}: ${harvest[harvestName].toLocaleString()}\n`);
+                        }
                     }
                 } else {
                     setTimeout(play, 500);
                 }
             });
         }
-    });
+    }, "SLOT MACHINE AUTOMATION");
 
     /* SKIP LOADING SCREEN */
-    define("home/loading", function() {
+    define(["home/loading"], function() {
         window.location = "/home";
-    });
+    }, "SKIP LOADING SCREEN");
 
     /* STAR PROGRESS BAR */
-    define("home", function() {
+    define(["home"], function() {
         const STAR_TABLE = [
             0,
             4000000,
@@ -158,10 +170,15 @@
             $("#spProgressBar").attr("class", "progressbar");
             $("#spProgressBar > div").attr("class", "progressbarValue");
         });
-    });
+    }, "STAR PROGRESS BAR");
 
-    /* RECONFIG ASSIST */
-    define("aircraft/show/[0-9]+/reconfigure|aircraft/buy/new/[0-9]+/[^/]+/.*", function() {
+    /* ENHANCE AIRCRAFT PROFIBILITY DETAIL */
+    define(["aircraft/show/[0-9]", "aircraft/buy/new/[0-9]+/[^/]+/.*"], function() {
+        //
+    }, "ENHANCE AIRCRAFT PROFIBILITY DETAIL");
+
+    /* RECONFIGURATION ASSIST */
+    define(["aircraft/show/[0-9]+/reconfigure", "aircraft/buy/new/[0-9]+/[^/]+/.*"], function() {
         $(`<style type='text/css'>
             #reconfigBox { float: right; width: 225px; height: 400px; overflow-y: auto; border: 1px solid #aaa; border-radius: 4px; margin-right: 2px; background-color: #fff }
             #reconfigBox::-webkit-scrollbar { width: 10px }
@@ -274,15 +291,89 @@
 
             $("#box2").after(reconfigBox);
         });
-    });
+    }, "RECONFIGURATION ASSIST");
 
     /* MAXIMIZE LOAN AMOUNT */
-    define("finances/bank/[0-9]+/stockMarket/request", function() {
+    define(["finances/bank/[0-9]+/stockMarket/request"], function() {
         $("#request_amount").val($("#request_amount").attr("data-amount"));
-    });
+    }, "MAXIMIZE LOAN AMOUNT");
+
+    /* PRICE PER SEAT */
+    define(["aircraft/buy/rental/[^/]+", "aircraft/buy/new/[0-9]+/[^/]+"], function() {
+        $(".aircraftPurchaseBox").each(function() {
+            const paxBox = $(this).find("li:contains('Seats') b");
+            if (paxBox.length == 0) {
+                // cargo, pass through
+                return;
+            }
+            assert(paxBox.length == 1);
+
+            const numPax = parseInt(paxBox.text().replace(/[^0-9]/g, ""));
+            if (numPax == 0) {
+                // cargo, pass through
+                return;
+            }
+
+            $(this).css({ height: "195px" });
+            $(this)
+                .find(".content")
+                .css({ height: "115px" });
+            $(this)
+                .find(".aircraftPrice")
+                .css({ "max-width": "180px" });
+
+            const priceBox = $(this).find("strong.discountTotalPrice, span:contains(' / Week') b");
+            assert(priceBox.length == 1);
+
+            const aircraftQuantitySelect = $(this).find("select.quantitySelect");
+
+            const pricePerPaxBox = $("<span/>");
+            priceBox.parent().append(pricePerPaxBox);
+
+            const updatePricePerPax = function() {
+                const aircraftQuantity = aircraftQuantitySelect.length == 1 ? aircraftQuantitySelect.val() : 1;
+                const price = parseInt(priceBox.text().replace(/[^0-9]/g, "")) / aircraftQuantity;
+                const pricePerSeatText = (price / numPax).toLocaleString(undefined, { maximumFractionDigits: 0 });
+                pricePerPaxBox.html(`• Price per seat : <strong>${pricePerSeatText} $</strong>`);
+            };
+
+            new MutationObserver(updatePricePerPax).observe(priceBox[0], { childList: true });
+            updatePricePerPax();
+        });
+    }, "PRICE PER SEAT");
+
+    /* AIRCRAFT FILTERING */
+    define(["aircraft/buy/rental/[^/]+", "aircraft/buy/new/[0-9]+/[^/]+"], function() {
+        const filterUnavailableCheckBox = $(
+            `<div style="margin-top:3px"><label><input type="checkbox" id="toggleAircraftsDisplay" style="margin-right:9px;vertical-align:middle">Filter unavailable aircrafts</label></div>`
+        );
+        $("form#aircraftFilterForm, .rentalFilterBox form").append(filterUnavailableCheckBox);
+
+        $("select#lineListSelect").change(toggleAircraftAvailability);
+        $("input#toggleAircraftsDisplay").click(toggleAircraftAvailability);
+
+        function isAircraftAvailable(aircraftPurchaseBox) {
+            return !aircraftPurchaseBox.hasClass("disabled-research") && !aircraftPurchaseBox.hasClass("disabled");
+        }
+
+        function toggleAircraftAvailability() {
+            $(".aircraftPurchaseBox").each(function() {
+                if (isAircraftAvailable($(this))) {
+                    $(this).show();
+                    return;
+                }
+
+                if ($("input#toggleAircraftsDisplay").prop("checked")) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }
+            });
+        }
+    }, "AIRCRAFT FILTERING");
 
     /* HYPERSIM */
-    define("marketing/pricing/[0-9]+", function() {});
+    define(["marketing/pricing/[0-9]+"], function() {}, "HYPERSIM");
     // ========================================================
 
     // ================ DATA EXTRACTORS =======================
@@ -310,11 +401,9 @@
                     const aircraftMap = {};
                     const routeMap = {};
 
-                    for (let i = 0; i < routeList.length; ++i) {
-                        const route = routeList[i];
-
+                    for (const route of routeList) {
                         route.remaining = [];
-                        for (let j = 0; j < 7; ++j) {
+                        for (let i = 0; i < 7; ++i) {
                             route.remaining.push({
                                 eco: route.paxAttEco,
                                 bus: route.paxAttBus,
@@ -326,11 +415,9 @@
                         routeMap[route.id] = route;
                     }
 
-                    for (let i = 0; i < aircraftList.length; ++i) {
-                        const aircraft = aircraftList[i];
-
-                        for (let j = 0; j < aircraft.planningList.length; ++j) {
-                            const trip = aircraft.planningList[j];
+                    for (const aircraft of aircraftList) {
+                        for (let i = 0; i < aircraft.planningList.length; ++i) {
+                            const trip = aircraft.planningList[i];
                             const remaining = routeMap[trip.lineId].remaining[(trip.takeOffTime / 86400) | 0];
                             remaining.eco -= aircraft.seatsEco * 2;
                             remaining.bus -= aircraft.seatsBus * 2;
@@ -397,11 +484,13 @@
     }
     // ========================================================
 
-    for (let k in modules) {
+    console.log(`===== AM2 Assist ${VERSION} =====`);
+    for (const k in modules) {
         if (pageUrl.match(new RegExp(k))) {
-            console.log(`Module triggered: ${k}`);
-            modules[k]();
-            break;
+            for (const funcPair of modules[k]) {
+                console.log(`Running module: ${funcPair[1]} (Pattern: ${k})`);
+                funcPair[0](k);
+            }
         }
     }
 })();
