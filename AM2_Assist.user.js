@@ -110,7 +110,7 @@
     }, "SKIP LOADING SCREEN");
 
     /* STAR PROGRESS BAR */
-    define(["home"], function() {
+    define(["home"], async function() {
         const STAR_TABLE = [
             0,
             4000000,
@@ -133,43 +133,42 @@
 
         const companyName = $(".companyNameBox").html();
 
-        loadStructralProfit(companyName).then(function(spValue) {
-            if (!spValue || spValue >= STAR_TABLE[STAR_TABLE.length - 1]) {
-                return;
+        const spValue = await loadStructralProfit(companyName);
+        if (!spValue || spValue >= STAR_TABLE[STAR_TABLE.length - 1]) {
+            return;
+        }
+
+        let spProgress;
+        let stars;
+        for (let i = 0; i < STAR_TABLE.length - 1; ++i) {
+            if (spValue >= STAR_TABLE[i] && spValue < STAR_TABLE[i + 1]) {
+                stars = i + 1;
+                spProgress = (spValue - STAR_TABLE[i]) / (STAR_TABLE[i + 1] - STAR_TABLE[i]) * 100;
+                break;
             }
+        }
 
-            let spProgress;
-            let stars;
-            for (let i = 0; i < STAR_TABLE.length - 1; ++i) {
-                if (spValue >= STAR_TABLE[i] && spValue < STAR_TABLE[i + 1]) {
-                    stars = i + 1;
-                    spProgress = (spValue - STAR_TABLE[i]) / (STAR_TABLE[i + 1] - STAR_TABLE[i]) * 100;
-                    break;
-                }
-            }
-
-            $(".companyStars").append(
-                "<div id='spProgress' style='display:flex;margin-top:4px;align-items:center;'><div id='spProgressBar' style='width:75px;'/><div id='spProgressText' style='margin-left:5px'/></div>"
-            );
-            $("#spProgressBar").progressbar({
-                value: spProgress
-            });
-            $("#spProgressText").html(`${spProgress.toFixed(1)}%`);
-
-            const spTooltipText = [
-                `Current SP: $${spValue.toLocaleString()}`,
-                `Next star: $${STAR_TABLE[stars].toLocaleString()}`
-            ];
-            if (stars > 0) {
-                spTooltipText.unshift(`Last star: $${STAR_TABLE[stars - 1].toLocaleString()}`);
-            }
-            $("#spProgress")
-                .attr("title", spTooltipText.join("\n"))
-                .tooltip({ content: spTooltipText.join("<br/>") });
-
-            $("#spProgressBar").attr("class", "progressbar");
-            $("#spProgressBar > div").attr("class", "progressbarValue");
+        $(".companyStars").append(
+            "<div id='spProgress' style='display:flex;margin-top:4px;align-items:center;'><div id='spProgressBar' style='width:75px;'/><div id='spProgressText' style='margin-left:5px'/></div>"
+        );
+        $("#spProgressBar").progressbar({
+            value: spProgress
         });
+        $("#spProgressText").html(`${spProgress.toFixed(1)}%`);
+
+        const spTooltipText = [
+            `Current SP: $${spValue.toLocaleString()}`,
+            `Next star: $${STAR_TABLE[stars].toLocaleString()}`
+        ];
+        if (stars > 0) {
+            spTooltipText.unshift(`Last star: $${STAR_TABLE[stars - 1].toLocaleString()}`);
+        }
+        $("#spProgress")
+            .attr("title", spTooltipText.join("\n"))
+            .tooltip({ content: spTooltipText.join("<br/>") });
+
+        $("#spProgressBar").attr("class", "progressbar");
+        $("#spProgressBar > div").attr("class", "progressbarValue");
     }, "STAR PROGRESS BAR");
 
     /* ENHANCE AIRCRAFT PROFIBILITY DETAIL */
@@ -178,7 +177,7 @@
     }, "ENHANCE AIRCRAFT PROFIBILITY DETAIL");
 
     /* RECONFIGURATION ASSIST */
-    define(["aircraft/show/[0-9]+/reconfigure", "aircraft/buy/new/[0-9]+/[^/]+/.*"], function() {
+    define(["aircraft/show/[0-9]+/reconfigure", "aircraft/buy/new/[0-9]+/[^/]+/.*"], async function() {
         $(`<style type='text/css'>
             #reconfigBox { float: right; width: 225px; height: 400px; overflow-y: auto; border: 1px solid #aaa; border-radius: 4px; margin-right: 2px; background-color: #fff }
             #reconfigBox::-webkit-scrollbar { width: 10px }
@@ -196,101 +195,91 @@
            </style>`).appendTo("head");
         const reconfigBox = $("<div id='reconfigBox'></div>");
 
-        loadNetworkData().then(function(data) {
-            let currentAircraftSpeed;
-            let currentAircraftRange;
-            let currentAircraftCategory;
-            let ownAircraftMatch = pageUrl.match(/aircraft\/show\/([0-9]+)\/reconfigure/);
+        const networkData = await loadNetworkData();
 
-            if (ownAircraftMatch) {
-                const currentAircraftId = ownAircraftMatch[1];
-                currentAircraftSpeed = data.aircraftMap[currentAircraftId].speed;
-                currentAircraftRange = data.aircraftMap[currentAircraftId].range;
-                currentAircraftCategory = data.aircraftMap[currentAircraftId].category;
-            } else {
-                const aircraftPurchaseBox = $(".aircraftPurchaseBox");
-                currentAircraftSpeed = parseInt(
-                    aircraftPurchaseBox
-                        .find("li:contains('Speed') b")
-                        .text()
-                        .replace(/[^0-9]/g, "")
-                );
-                currentAircraftRange = parseInt(
-                    aircraftPurchaseBox
-                        .find("li:contains('Range') b")
-                        .text()
-                        .replace(/[^0-9]/g, "")
-                );
-                currentAircraftCategory = parseInt(
-                    aircraftPurchaseBox
-                        .find(".title img")
-                        .attr("alt")
-                        .replace("cat", "")
-                );
-                reconfigBox.css({ height: "300px", "margin-top": "70px" });
-            }
+        let currentAircraftSpeed;
+        let currentAircraftRange;
+        let currentAircraftCategory;
+        let ownAircraftMatch = pageUrl.match(/aircraft\/show\/([0-9]+)\/reconfigure/);
 
-            const possibleRoutes = data.routeList
-                .filter(route => route.distance <= currentAircraftRange && route.category >= currentAircraftCategory)
-                .sort((r1, r2) => r2.distance - r1.distance);
+        if (ownAircraftMatch) {
+            const currentAircraftId = ownAircraftMatch[1];
+            currentAircraftSpeed = networkData.aircraftMap[currentAircraftId].speed;
+            currentAircraftRange = networkData.aircraftMap[currentAircraftId].range;
+            currentAircraftCategory = networkData.aircraftMap[currentAircraftId].category;
+        } else {
+            const aircraftPurchaseBox = $(".aircraftPurchaseBox");
+            currentAircraftSpeed = getIntFromElement(aircraftPurchaseBox.find("li:contains('Speed') b"));
+            currentAircraftRange = getIntFromElement(aircraftPurchaseBox.find("li:contains('Range') b"));
+            currentAircraftCategory = parseInt(
+                aircraftPurchaseBox
+                    .find(".title img")
+                    .attr("alt")
+                    .replace("cat", "")
+            );
+            reconfigBox.css({ height: "300px", "margin-top": "70px" });
+        }
 
-            possibleRoutes.forEach(route => {
-                const flightTime = calculateFlightTime(route.distance, currentAircraftSpeed, data.flightParameters);
-                const flightTimeH = (flightTime / 60) | 0;
-                const flightTimeM = flightTime % 60;
+        const possibleRoutes = networkData.routeList
+            .filter(route => route.distance <= currentAircraftRange && route.category >= currentAircraftCategory)
+            .sort((r1, r2) => r2.distance - r1.distance);
 
-                const titleBox = $(
-                    `<div class='route-title'>
-                        <span class='route-name'>${route.name}</span>
-                        <span class='route-dist'>${route.distance}km (${flightTimeH}h${flightTimeM})</span>
-                     </div>`
-                );
-                reconfigBox.append(titleBox);
+        possibleRoutes.forEach(route => {
+            const flightTime = calculateFlightTime(route.distance, currentAircraftSpeed, networkData.flightParameters);
+            const flightTimeH = (flightTime / 60) | 0;
+            const flightTimeM = flightTime % 60;
 
-                const paxGroup = [];
-                for (let i = 0; i < route.remaining.length; ++i) {
-                    const currentPax = route.remaining[i];
-                    if (paxGroup.length == 0) {
-                        paxGroup.push({ days: [i], pax: currentPax });
-                        continue;
-                    }
+            const titleBox = $(
+                `<div class='route-title'>
+                    <span class='route-name'>${route.name}</span>
+                    <span class='route-dist'>${route.distance}km (${flightTimeH}h${flightTimeM})</span>
+                    </div>`
+            );
+            reconfigBox.append(titleBox);
 
-                    const lastPax = paxGroup[paxGroup.length - 1];
-                    if (
-                        currentPax.eco == lastPax.pax.eco &&
-                        currentPax.bus == lastPax.pax.bus &&
-                        currentPax.first == lastPax.pax.first &&
-                        currentPax.cargo == lastPax.pax.cargo
-                    ) {
-                        lastPax.days.push(i);
-                    } else {
-                        paxGroup.push({ days: [i], pax: currentPax });
-                    }
+            const paxGroup = [];
+            for (let i = 0; i < route.remaining.length; ++i) {
+                const currentPax = route.remaining[i];
+                if (paxGroup.length == 0) {
+                    paxGroup.push({ days: [i], pax: currentPax });
+                    continue;
                 }
 
-                const getPaxTextClass = pax => (pax >= 0 ? "num-pos" : "num-neg");
+                const lastPax = paxGroup[paxGroup.length - 1];
+                if (
+                    currentPax.eco == lastPax.pax.eco &&
+                    currentPax.bus == lastPax.pax.bus &&
+                    currentPax.first == lastPax.pax.first &&
+                    currentPax.cargo == lastPax.pax.cargo
+                ) {
+                    lastPax.days.push(i);
+                } else {
+                    paxGroup.push({ days: [i], pax: currentPax });
+                }
+            }
 
-                paxGroup.forEach(paxSeg => {
-                    const dayText =
-                        paxSeg.days.length == 1
-                            ? `${DAYS_SHORT[paxSeg.days[0]]}`
-                            : `${DAYS_SHORT[paxSeg.days[0]]}-${DAYS_SHORT[paxSeg.days[paxSeg.days.length - 1]]}`;
-                    const paxData = paxSeg.pax;
-                    const paxBox = $(
-                        `<div class='pax-line'>
-                            <span class='day-box'>${dayText}</span>
-                            <span class='pax-box ${getPaxTextClass(paxData.eco)}'>${paxData.eco}</span>
-                            <span class='pax-box ${getPaxTextClass(paxData.bus)}'>${paxData.bus}</span>
-                            <span class='pax-box ${getPaxTextClass(paxData.first)}'>${paxData.first}</span>
-                            <span class='pax-box ${getPaxTextClass(paxData.cargo)}'>${paxData.cargo}T</span>
-                         </div>`
-                    );
-                    reconfigBox.append(paxBox);
-                });
+            const getPaxTextClass = pax => (pax >= 0 ? "num-pos" : "num-neg");
+
+            paxGroup.forEach(paxSeg => {
+                const dayText =
+                    paxSeg.days.length == 1
+                        ? `${DAYS_SHORT[paxSeg.days[0]]}`
+                        : `${DAYS_SHORT[paxSeg.days[0]]}-${DAYS_SHORT[paxSeg.days[paxSeg.days.length - 1]]}`;
+                const paxData = paxSeg.pax;
+                const paxBox = $(
+                    `<div class='pax-line'>
+                        <span class='day-box'>${dayText}</span>
+                        <span class='pax-box ${getPaxTextClass(paxData.eco)}'>${paxData.eco}</span>
+                        <span class='pax-box ${getPaxTextClass(paxData.bus)}'>${paxData.bus}</span>
+                        <span class='pax-box ${getPaxTextClass(paxData.first)}'>${paxData.first}</span>
+                        <span class='pax-box ${getPaxTextClass(paxData.cargo)}'>${paxData.cargo}T</span>
+                        </div>`
+                );
+                reconfigBox.append(paxBox);
             });
-
-            $("#box2").after(reconfigBox);
         });
+
+        $("#box2").after(reconfigBox);
     }, "RECONFIGURATION ASSIST");
 
     /* MAXIMIZE LOAN AMOUNT */
@@ -308,7 +297,7 @@
             }
             assert(paxBox.length == 1);
 
-            const numPax = parseInt(paxBox.text().replace(/[^0-9]/g, ""));
+            const numPax = getIntFromElement(paxBox);
             if (numPax == 0) {
                 // cargo, pass through
                 return;
@@ -332,7 +321,7 @@
 
             const updatePricePerPax = function() {
                 const aircraftQuantity = aircraftQuantitySelect.length == 1 ? aircraftQuantitySelect.val() : 1;
-                const price = parseInt(priceBox.text().replace(/[^0-9]/g, "")) / aircraftQuantity;
+                const price = getIntFromElement(priceBox) / aircraftQuantity;
                 const pricePerSeatText = (price / numPax).toLocaleString(undefined, { maximumFractionDigits: 0 });
                 pricePerPaxBox.html(`• Price per seat : <strong>${pricePerSeatText} $</strong>`);
             };
@@ -372,79 +361,213 @@
         }
     }, "AIRCRAFT FILTERING");
 
-    /* HYPERSIM */
-    define(["marketing/pricing/[0-9]+"], function() {}, "HYPERSIM");
+    /* DUPERSIM */
+    define(["marketing/pricing/[0-9]+"], function() {
+        const simulationCost = getIntFromElement($(".demandSimulation p:contains('Simulation cost')"));
+        const duperSimHtml = $(`
+            <hr class="myGreyhr">
+            <div class="secretaryBox">
+                <div class="avatar"><img src="https://vignette.wikia.nocookie.net/poohadventures/images/0/04/934abf40f46d007af166975c7af8381e.png/revision/latest/scale-to-width-down/60" style="margin-left:15px"></div>
+                <div class="explanation">
+                    <p>The DUPER Simulation enables you to determine the best price to get a remaining demand close to zero. This feature is only to be used if flights are scheduled for this route.</p>
+                    <input type="button" id="duperSimButton" class="validBtn validBtnBlue" value="Perform a DUPER simulation with ${(
+                        simulationCost * 5
+                    ).toLocaleString()} $">
+                </div>
+            </div>`);
+        $(".secretaryBox").after(duperSimHtml);
+
+        $("#duperSimButton").click(async function() {
+            const STEP_RATIO = 0.12;
+            const PAX_EPSILON = 3;
+            const COOLDOWN = 5000;
+            const [ECO, BUS, FIRST, CARGO] = [0, 1, 2, 3];
+            const [L2, L1, R1, R2] = [0, 1, 2, 3];
+
+            const error = console.error;
+
+            const lineId = $("input#lineId").val();
+            const prices = $(".box1 div.price:contains('Ideal')")
+                .map((index, elem) => getIntFromElement($(elem)))
+                .get();
+            const demands = [];
+            const supplies = [];
+
+            const step = prices.map(price => (STEP_RATIO * price) | 0);
+            const simPrices = [
+                prices.map((price, index) => price - 2 * step[index]),
+                prices.map((price, index) => price - step[index]),
+                prices.map((price, index) => price + step[index]),
+                prices.map((price, index) => price + 2 * step[index])
+            ];
+            const sim = [];
+
+            // iteration 0
+            const initialSimResult = await loadSimulationResult(lineId, ...prices);
+            for (const seat of [ECO, BUS, FIRST, CARGO]) {
+                demands[seat] = initialSimResult[seat].pax;
+                supplies[seat] = demands[seat] - initialSimResult[seat].paxLeft;
+            }
+
+            // iteration 1
+            await sleep(COOLDOWN);
+            sim[L1] = await loadSimulationResult(lineId, ...simPrices[L1]);
+            await sleep(COOLDOWN);
+            sim[R1] = await loadSimulationResult(lineId, ...simPrices[R1]);
+
+            for (const seat of [ECO, BUS, FIRST]) {
+                if (Math.abs(sim[L1][seat].pax + sim[R1][seat].pax - 2 * demands[seat]) < PAX_EPSILON) {
+                    error("delta not significant");
+                    debugger;
+                    return;
+                }
+            }
+
+            // iteration 2
+            await sleep(COOLDOWN);
+            sim[L2] = await loadSimulationResult(lineId, ...simPrices[L2]);
+            await sleep(COOLDOWN);
+            sim[R2] = await loadSimulationResult(lineId, ...simPrices[R2]);
+
+            // data crunching
+            const solution = [];
+            for (const seat of [ECO, BUS, FIRST]) {
+                const a1 = (sim[L1][seat].pax - sim[L2][seat].pax) / (simPrices[L1][seat] - simPrices[L2][seat]);
+                const b1 = sim[L1][seat].pax - a1 * simPrices[L1][seat];
+                const a2 = (sim[R1][seat].pax - sim[R2][seat].pax) / (simPrices[R1][seat] - simPrices[R2][seat]);
+                const b2 = sim[R1][seat].pax - a2 * simPrices[R1][seat];
+
+                const idealPrice = (b2 - b1) / (a1 - a2);
+                const idealPax = a1 * idealPrice + b1;
+                const idealTurnover = Math.round(idealPrice) * Math.round(idealPax);
+                const bestPrice = supplies[seat] >= idealPax ? (supplies[seat] - b1) / a1 : (supplies[seat] - b2) / a2;
+                const bestPax = Math.min(supplies[seat], Math.round(bestPrice) >= idealPrice ? a2 * bestPrice + b2 : a1 * bestPrice + b1);
+                const bestTurnover = Math.round(bestPrice) * Math.round(bestPax);
+
+                solution[seat] = {
+                    idealPrice,
+                    idealPax,
+                    idealTurnover,
+                    bestPrice,
+                    bestPax,
+                    bestTurnover,
+                    a1,
+                    b1,
+                    a2,
+                    b2
+                };
+            }
+
+            debugger;
+        });
+    }, "DUPERSIM");
     // ========================================================
 
-    // ================ DATA EXTRACTORS =======================
-    function loadStructralProfit(companyName) {
+    // ======================== AJAX ==========================
+    async function loadStructralProfit(companyName) {
         return $.get(`/company/ranking/?searchTerm=${companyName}`).then(function(data) {
-            const rankingBox = $($.parseHTML(data))
-                .find(`div.box1:contains("${companyName}") .underBox4`)
-                .html();
-            if (!rankingBox) {
+            const rankingBox = $($.parseHTML(data)).find(`div.box1:contains("${companyName}") .underBox4`);
+            if (rankingBox.length == 0) {
                 return;
             }
-            return parseInt(rankingBox.replace(/[^0-9]/g, ""));
+            return getIntFromElement(rankingBox);
         });
     }
 
-    function loadNetworkData() {
+    async function loadNetworkData() {
         return new Promise(function(resolve, reject) {
             const networkIFrame = $(
                 "<iframe src='http://www.airlines-manager.com/network/planning' width='0' height='0'/>"
             );
-            networkIFrame.load(function() {
-                wait(() => networkIFrame[0].contentWindow.hasAlreadyRegroupedData, 100, 50).then(function() {
-                    const aircraftList = networkIFrame[0].contentWindow.aircraftListLoaded;
-                    const routeList = networkIFrame[0].contentWindow.lineListLoaded;
-                    const aircraftMap = {};
-                    const routeMap = {};
+            networkIFrame.load(async function() {
+                await wait(() => networkIFrame[0].contentWindow.hasAlreadyRegroupedData, 100, 50);
 
-                    for (const route of routeList) {
-                        route.remaining = [];
-                        for (let i = 0; i < 7; ++i) {
-                            route.remaining.push({
-                                eco: route.paxAttEco,
-                                bus: route.paxAttBus,
-                                first: route.paxAttFirst,
-                                cargo: route.paxAttCargo
-                            });
-                        }
+                const aircraftList = networkIFrame[0].contentWindow.aircraftListLoaded;
+                const routeList = networkIFrame[0].contentWindow.lineListLoaded;
+                const aircraftMap = {};
+                const routeMap = {};
 
-                        routeMap[route.id] = route;
+                for (const route of routeList) {
+                    route.remaining = [];
+                    for (let i = 0; i < 7; ++i) {
+                        route.remaining.push({
+                            eco: route.paxAttEco,
+                            bus: route.paxAttBus,
+                            first: route.paxAttFirst,
+                            cargo: route.paxAttCargo
+                        });
                     }
 
-                    for (const aircraft of aircraftList) {
-                        for (let i = 0; i < aircraft.planningList.length; ++i) {
-                            const trip = aircraft.planningList[i];
-                            const remaining = routeMap[trip.lineId].remaining[(trip.takeOffTime / 86400) | 0];
-                            remaining.eco -= aircraft.seatsEco * 2;
-                            remaining.bus -= aircraft.seatsBus * 2;
-                            remaining.first -= aircraft.seatsFirst * 2;
-                            remaining.cargo -= aircraft.payloadUsed * 2;
-                        }
+                    routeMap[route.id] = route;
+                }
 
-                        aircraftMap[aircraft.id] = aircraft;
+                for (const aircraft of aircraftList) {
+                    for (let i = 0; i < aircraft.planningList.length; ++i) {
+                        const trip = aircraft.planningList[i];
+                        const remaining = routeMap[trip.lineId].remaining[(trip.takeOffTime / 86400) | 0];
+                        remaining.eco -= aircraft.seatsEco * 2;
+                        remaining.bus -= aircraft.seatsBus * 2;
+                        remaining.first -= aircraft.seatsFirst * 2;
+                        remaining.cargo -= aircraft.payloadUsed * 2;
                     }
 
-                    const flightParameters = JSON.parse(
-                        networkIFrame
-                            .contents()
-                            .find("#jsonAirlineFlightParameters")
-                            .text()
-                    );
+                    aircraftMap[aircraft.id] = aircraft;
+                }
 
-                    resolve({
-                        aircraftList,
-                        routeList,
-                        aircraftMap,
-                        routeMap,
-                        flightParameters
-                    });
-                }, reject);
+                const flightParameters = JSON.parse(
+                    networkIFrame
+                        .contents()
+                        .find("#jsonAirlineFlightParameters")
+                        .text()
+                );
+
+                resolve({
+                    aircraftList,
+                    routeList,
+                    aircraftMap,
+                    routeMap,
+                    flightParameters
+                });
             });
             $("html").append(networkIFrame);
+        });
+    }
+
+    async function loadSimulationResult(lineId, priceEco, priceBus, priceFirst, priceCargo) {
+        const [ECO, BUS, FIRST, CARGO] = [0, 1, 2, 3];
+        return $.post(`/marketing/pricing/priceSimulation/${lineId}`, {
+            priceEco,
+            priceBus,
+            priceFirst,
+            priceCargo
+        }).then(function(result) {
+            const data = JSON.parse(result);
+            if (data.errorCode != 0) {
+                throw new Error(data.notifyMessage);
+            }
+
+            data[ECO] = {
+                pax: data.paxEcoValue,
+                paxLeft: data.paxLeftEcoValue,
+                turnover: getIntFromString(data.caEcoValue)
+            };
+            data[BUS] = {
+                pax: data.paxBusValue,
+                paxLeft: data.paxLeftBusValue,
+                turnover: getIntFromString(data.caBusValue)
+            };
+            data[FIRST] = {
+                pax: data.paxFirstValue,
+                paxLeft: data.paxLeftFirstValue,
+                turnover: getIntFromString(data.caFirstValue)
+            };
+            data[CARGO] = {
+                pax: data.paxCargoValue,
+                paxLeft: data.paxLeftCargoValue,
+                turnover: getIntFromString(data.caCargoValue)
+            };
+
+            return data;
         });
     }
     // ========================================================
@@ -457,7 +580,7 @@
         }
     }
 
-    function wait(predicate, interval, maxRetries) {
+    async function wait(predicate, interval, maxRetries) {
         return new Promise(function(resolve, reject) {
             let tries = 0;
             const pollHandle = setInterval(function() {
@@ -481,6 +604,20 @@
             (flightParameters.boardingTime * 2 + flightParameters.landingTime * 2 + flightParameters.transitionTime) /
             60;
         return airTime + logisticTime;
+    }
+
+    async function sleep(msec) {
+        return new Promise(function(resolve) {
+            setTimeout(resolve, msec);
+        });
+    }
+
+    function getIntFromString(str) {
+        return parseInt(str.replace(/[^0-9]/g, ""));
+    }
+
+    function getIntFromElement(element) {
+        return getIntFromString(element.text());
     }
     // ========================================================
 
