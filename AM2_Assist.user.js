@@ -363,24 +363,78 @@
 
     /* DUPERSIM */
     define(["marketing/pricing/[0-9]+"], function() {
-        const simulationCost = getIntFromElement($(".demandSimulation p:contains('Simulation cost')"));
+        const SPINNER = `<img src="https://goo.gl/w8Fwyg" width="20">`;
+
+        $(`<style type='text/css'>
+            #duperSimTable { margin-top: 13px; margin-left: auto; width: 622px; table-layout: fixed }
+            #duperSimTable tr { height: 35px }
+            #duperSimTable tbody tr:nth-child(even) { background-color: #f3fafe }
+            #duperSimTable td:first-child { width: 130px; text-align: right; padding-right: 5px }
+            #duperSimTable tbody td:not(:first-child), #duperSimTable thead { font-weight: bold }
+            #duperSimTable td { vertical-align: middle; border-left: 2px solid #FFF; border-right: 2px solid #FFF }
+            #duperSimTable td:not(:first-child) { text-align: center }
+            #duperSimTable .new-segment { border-top: 1px dashed #AAA }
+            .num-pos { color: #8ecb47 }
+            .num-neg { color: #da4e28 }
+           </style>
+        `).appendTo("head");
+
+        const simulationCost = getIntFromElement($(".demandSimulation > p:first-of-type"));
+
         const duperSimHtml = $(`
             <hr class="myGreyhr">
-            <div class="secretaryBox">
-                <div class="avatar"><img src="https://vignette.wikia.nocookie.net/poohadventures/images/0/04/934abf40f46d007af166975c7af8381e.png/revision/latest/scale-to-width-down/60" style="margin-left:15px"></div>
+            <div id="duperSimBox" class="secretaryBox" style="margin-top:13px;width:715px;min-height:128px">
+                <div class="avatar" style="float:left"><img src="https://goo.gl/i627mQ" style="margin-left:15px"></div>
                 <div class="explanation">
                     <p>The DUPER Simulation enables you to determine the best price to get a remaining demand close to zero. This feature is only to be used if flights are scheduled for this route.</p>
                     <input type="button" id="duperSimButton" class="validBtn validBtnBlue" value="Perform a DUPER simulation with ${(
                         simulationCost * 5
-                    ).toLocaleString()} $">
-                </div>
-            </div>`);
+                    ).toLocaleString()} $" style="position:absolute;top:47px;right:10px">
+                    </div>
+                    </div>
+        `);
         $(".secretaryBox").after(duperSimHtml);
+
+        const duperSimTable = $(`
+            <table id="duperSimTable">
+                <thead>
+                    <tr>
+                    <td></td><td colspan="2">Economy class</td><td colspan="2">Business class</td><td colspan="2">First class</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="row-starting-price" class="new-segment"><td>Starting Price</td></tr>
+                    <tr id="row-arrow-1"><td></td><td colspan="2">↓</td><td colspan="2">↓</td><td colspan="2">↓</td></tr>
+                    <tr id="row-pax-1"><td>Demand</td></tr>
+                    <tr id="row-supply"><td>Supply</td></tr>
+                    <tr id="row-price-step"><td>Price step</td></tr>
+                    <tr id="row-near-samples" class="new-segment"><td>Sample (Near)</td></tr>
+                    <tr id="row-arrow-2"><td></td><td>↓</td><td>↓</td><td>↓</td><td>↓</td><td>↓</td><td>↓</td></tr>
+                    <tr id="row-pax-2"><td>Demand</td></tr>
+                    <tr id="row-far-samples" class="new-segment"><td>Samples (Far)</td></tr>
+                    <tr id="row-arrow-3"><td></td><td>↓</td><td>↓</td><td>↓</td><td>↓</td><td>↓</td><td>↓</td></tr>
+                    <tr id="row-pax-3"><td>Demand</td></tr>
+                    <tr id="row-under-equation" class="new-segment"><td>Underprice Equation</td></tr>
+                    <tr id="row-over-equation"><td>Overprice Equation</td></tr>
+                    <tr id="row-ideal-price" class="new-segment"><td>Ideal price</td></tr>
+                    <tr id="row-arrow-4"><td></td><td colspan="2">↓</td><td colspan="2">↓</td><td colspan="2">↓</td></tr>
+                    <tr id="row-pax-4"><td>Demand</td></tr>
+                    <tr id="row-ideal-turnover"><td>Ideal Turnover</td></tr>
+                    <tr id="row-best-price" class="new-segment"><td>Best price</td></tr>
+                    <tr id="row-arrow-5"><td></td><td colspan="2">↓</td><td colspan="2">↓</td><td colspan="2">↓</td></tr>
+                    <tr id="row-pax-5"><td>Demand</td></tr>
+                    <tr id="row-best-turnover"><td>Best Turnover</td></tr>
+                </tbody>
+            </table>
+        `);
+        $("#duperSimBox").append(duperSimTable);
+        $("#duperSimTable thead, #duperSimTable tbody tr").hide();
 
         $("#duperSimButton").click(async function() {
             const STEP_RATIO = 0.12;
             const PAX_EPSILON = 3;
             const COOLDOWN = 5000;
+            const ANIMATION_SPEED = 800;
             const [ECO, BUS, FIRST, CARGO] = [0, 1, 2, 3];
             const [L2, L1, R1, R2] = [0, 1, 2, 3];
 
@@ -403,17 +457,61 @@
             const sim = [];
 
             // iteration 0
+            for (const seat of [ECO, BUS, FIRST]) {
+                $("#row-starting-price").append(`<td colspan="2">${prices[seat].toLocaleString()} $</td>`);
+                $("#row-pax-1").append(`<td id="cell-pax-1-${seat}" colspan="2">${SPINNER}</td>`);
+            }
+            $("#duperSimTable thead, #row-starting-price, #row-arrow-1, #row-pax-1").show(ANIMATION_SPEED);
+            $("#row-pax-1")[0].scrollIntoView({ behavior: "smooth" });
+            await sleep(ANIMATION_SPEED);
+
             const initialSimResult = await loadSimulationResult(lineId, ...prices);
             for (const seat of [ECO, BUS, FIRST, CARGO]) {
                 demands[seat] = initialSimResult[seat].pax;
                 supplies[seat] = demands[seat] - initialSimResult[seat].paxLeft;
             }
 
+            const getPaxTextClass = (pax, seat) => (pax - supplies[seat] >= 0 ? "num-pos" : "num-neg");
+
+            for (const seat of [ECO, BUS, FIRST]) {
+                $(`#cell-pax-1-${seat}`).html(
+                    `<span class="${getPaxTextClass(initialSimResult[seat].pax, seat)}">
+                        ${initialSimResult[seat].pax} Pax
+                    </span>`
+                );
+                $("#row-supply").append(`<td colspan="2">${supplies[seat]} Pax</td>`);
+                $("#row-price-step").append(`<td colspan="2">${step[seat].toLocaleString()} $</td>`);
+            }
+            $("#row-supply, #row-price-step, #row-near-samples, #row-arrow-2, #row-pax-2").show(ANIMATION_SPEED);
+            $("#row-pax-2")[0].scrollIntoView({ behavior: "smooth" });
+
             // iteration 1
+            for (const seat of [ECO, BUS, FIRST]) {
+                $("#row-near-samples").append(`
+                    <td>${simPrices[L1][seat].toLocaleString()} $</td>
+                    <td>${simPrices[R1][seat].toLocaleString()} $</td>
+                `);
+                $("#row-pax-2").append(`
+                    <td id="cell-pax-2-${seat}-l">${SPINNER}</td>
+                    <td id="cell-pax-2-${seat}-r">${SPINNER}</td>
+                `);
+            }
+
             await sleep(COOLDOWN);
             sim[L1] = await loadSimulationResult(lineId, ...simPrices[L1]);
+            for (const seat of [ECO, BUS, FIRST]) {
+                $(`#cell-pax-2-${seat}-l`).html(
+                    `<span class="${getPaxTextClass(sim[L1][seat].pax, seat)}">${sim[L1][seat].pax} Pax</span>`
+                );
+            }
+
             await sleep(COOLDOWN);
             sim[R1] = await loadSimulationResult(lineId, ...simPrices[R1]);
+            for (const seat of [ECO, BUS, FIRST]) {
+                $(`#cell-pax-2-${seat}-r`).html(
+                    `<span class="${getPaxTextClass(sim[R1][seat].pax, seat)}">${sim[R1][seat].pax} Pax</span>`
+                );
+            }
 
             for (const seat of [ECO, BUS, FIRST]) {
                 if (Math.abs(sim[L1][seat].pax + sim[R1][seat].pax - 2 * demands[seat]) < PAX_EPSILON) {
@@ -424,10 +522,34 @@
             }
 
             // iteration 2
+            $("#row-far-samples, #row-arrow-3, #row-pax-3").show(ANIMATION_SPEED);
+            $("#row-pax-3")[0].scrollIntoView({ behavior: "smooth" });
+            for (const seat of [ECO, BUS, FIRST]) {
+                $("#row-far-samples").append(`
+                    <td>${simPrices[L2][seat].toLocaleString()} $</td>
+                    <td>${simPrices[R2][seat].toLocaleString()} $</td>
+                `);
+                $("#row-pax-3").append(`
+                    <td id="cell-pax-3-${seat}-l">${SPINNER}</td>
+                    <td id="cell-pax-3-${seat}-r">${SPINNER}</td>
+                `);
+            }
+
             await sleep(COOLDOWN);
             sim[L2] = await loadSimulationResult(lineId, ...simPrices[L2]);
+            for (const seat of [ECO, BUS, FIRST]) {
+                $(`#cell-pax-3-${seat}-l`).html(
+                    `<span class="${getPaxTextClass(sim[L2][seat].pax, seat)}">${sim[L2][seat].pax} Pax</span>`
+                );
+            }
+
             await sleep(COOLDOWN);
             sim[R2] = await loadSimulationResult(lineId, ...simPrices[R2]);
+            for (const seat of [ECO, BUS, FIRST]) {
+                $(`#cell-pax-3-${seat}-r`).html(
+                    `<span class="${getPaxTextClass(sim[R2][seat].pax, seat)}">${sim[R2][seat].pax} Pax</span>`
+                );
+            }
 
             // data crunching
             const solution = [];
@@ -441,7 +563,10 @@
                 const idealPax = a1 * idealPrice + b1;
                 const idealTurnover = Math.round(idealPrice) * Math.round(idealPax);
                 const bestPrice = supplies[seat] >= idealPax ? (supplies[seat] - b1) / a1 : (supplies[seat] - b2) / a2;
-                const bestPax = Math.min(supplies[seat], Math.round(bestPrice) >= idealPrice ? a2 * bestPrice + b2 : a1 * bestPrice + b1);
+                const bestPax = Math.min(
+                    supplies[seat],
+                    Math.round(bestPrice) >= idealPrice ? a2 * bestPrice + b2 : a1 * bestPrice + b1
+                );
                 const bestTurnover = Math.round(bestPrice) * Math.round(bestPax);
 
                 solution[seat] = {
@@ -458,7 +583,48 @@
                 };
             }
 
-            debugger;
+            for (const seat of [ECO, BUS, FIRST]) {
+                $("#row-under-equation").append(
+                    `<td colspan="2" style="font-style:italic">
+                        y = ${solution[seat].a1.toFixed(4)}x + ${solution[seat].b1.toFixed(4)}
+                    </td>`
+                );
+                $("#row-over-equation").append(
+                    `<td colspan="2" style="font-style:italic">
+                        y = ${solution[seat].a2.toFixed(4)}x + ${solution[seat].b2.toFixed(4)}
+                    </td>`
+                );
+                $("#row-ideal-price").append(
+                    `<td colspan="2">${Math.round(solution[seat].idealPrice).toLocaleString()} $</td>`
+                );
+                $("#row-pax-4").append(
+                    `<td colspan="2"><span class="${getPaxTextClass(
+                        Math.round(solution[seat].idealPax),
+                        seat
+                    )}">${Math.round(solution[seat].idealPax)} Pax</span></td>`
+                );
+                $("#row-ideal-turnover").append(
+                    `<td colspan="2">${solution[seat].idealTurnover.toLocaleString()} $</td>`
+                );
+                $("#row-best-price").append(
+                    `<td colspan="2">${Math.round(solution[seat].bestPrice).toLocaleString()} $</td>`
+                );
+                $("#row-pax-5").append(
+                    `<td colspan="2"><span class="${getPaxTextClass(Math.round(solution[seat].bestPax), seat)}">${
+                        solution[seat].bestPax
+                    } Pax</span></td>`
+                );
+                $("#row-best-turnover").append(
+                    `<td colspan="2">${solution[seat].bestTurnover.toLocaleString()} $</td>`
+                );
+            }
+
+            $(
+                "#row-under-equation, #row-over-equation, #row-ideal-price, #row-arrow-4, #row-pax-4, #row-ideal-turnover, #row-best-price, #row-arrow-5, #row-pax-5, #row-best-turnover"
+            ).show(ANIMATION_SPEED);
+            $("#row-best-turnover")[0].scrollIntoView({ behavior: "smooth" });
+
+            // debugger;
         });
     }, "DUPERSIM");
     // ========================================================
