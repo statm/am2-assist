@@ -363,7 +363,7 @@
 
     /* DUPERSIM */
     define(["marketing/pricing/[0-9]+"], function() {
-        const SPINNER = `<img src="https://goo.gl/w8Fwyg" width="20">`;
+        const SPINNER = `<img src="https://goo.gl/aFrC17" width="20">`;
 
         $(`<style type='text/css'>
             #duperSimTable { margin-top: 13px; margin-left: auto; width: 622px; table-layout: fixed }
@@ -408,7 +408,7 @@
                     <tr id="row-pax-1"><td>Demand</td></tr>
                     <tr id="row-supply"><td>Supply</td></tr>
                     <tr id="row-price-step"><td>Price step</td></tr>
-                    <tr id="row-near-samples" class="new-segment"><td>Sample (Near)</td></tr>
+                    <tr id="row-near-samples" class="new-segment"><td>Samples (Near)</td></tr>
                     <tr id="row-arrow-2"><td></td><td>↓</td><td>↓</td><td>↓</td><td>↓</td><td>↓</td><td>↓</td></tr>
                     <tr id="row-pax-2"><td>Demand</td></tr>
                     <tr id="row-far-samples" class="new-segment"><td>Samples (Far)</td></tr>
