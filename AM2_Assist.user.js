@@ -288,7 +288,8 @@
     }, "MAXIMIZE LOAN AMOUNT");
 
     /* PRICE PER SEAT */
-    define(["aircraft/buy/rental/[^/]+", "aircraft/buy/new/[0-9]+/[^/]+"], function() {
+    define(["aircraft/buy/rental/[^/]+", "aircraft/buy/new/[0-9]+/[^/]+"], function(pattern) {
+        const isRental = pattern.startsWith("aircraft/buy/rental");
         $(".aircraftPurchaseBox").each(function() {
             const paxBox = $(this).find("li:contains('Seats') b");
             if (paxBox.length == 0) {
@@ -323,7 +324,9 @@
                 const aircraftQuantity = aircraftQuantitySelect.length == 1 ? aircraftQuantitySelect.val() : 1;
                 const price = getIntFromElement(priceBox) / aircraftQuantity;
                 const pricePerSeatText = (price / numPax).toLocaleString(undefined, { maximumFractionDigits: 0 });
-                pricePerPaxBox.html(`• Price per seat : <strong>${pricePerSeatText} $</strong>`);
+                pricePerPaxBox.html(
+                    `• Price per seat : <strong>${pricePerSeatText} $</strong>${isRental ? " / Week" : ""}`
+                );
             };
 
             new MutationObserver(updatePricePerPax).observe(priceBox[0], { childList: true });
