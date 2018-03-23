@@ -458,6 +458,12 @@
             const [L2, L1, R1, R2] = [0, 1, 2, 3];
 
             const lineId = $("input#lineId").val();
+
+            if ($(".box1 div.price:contains('Ideal')").length == 0) {
+                showError("You must perform an audit before DUPER Sim.");
+                return;
+            }
+
             const prices = $(".box1 div.price:contains('Ideal')")
                 .map((index, elem) => getIntFromElement($(elem)))
                 .get();
@@ -475,8 +481,6 @@
 
             // ui reset
             resetUI();
-
-            // TODO: possible error: You must perform an audit before DUPER Sim
 
             // iteration 0
             for (const seat of [ECO, BUS, FIRST]) {
