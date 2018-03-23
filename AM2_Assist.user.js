@@ -562,7 +562,7 @@
                 const idealPrice = (b2 - b1) / (a1 - a2);
                 const idealPax = a1 * idealPrice + b1;
                 const idealTurnover = Math.round(idealPrice) * Math.round(idealPax);
-                const bestPrice = supplies[seat] >= idealPax ? (supplies[seat] - b1) / a1 : (supplies[seat] - b2) / a2;
+                const bestPrice = supplies[seat] >= idealPax ? idealPrice : (supplies[seat] - b2) / a2;
                 const bestPax = Math.min(
                     supplies[seat],
                     Math.round(bestPrice) >= idealPrice ? a2 * bestPrice + b2 : a1 * bestPrice + b1
@@ -610,9 +610,10 @@
                     `<td colspan="2">${Math.round(solution[seat].bestPrice).toLocaleString()} $</td>`
                 );
                 $("#row-pax-5").append(
-                    `<td colspan="2"><span class="${getPaxTextClass(Math.round(solution[seat].bestPax), seat)}">${
-                        solution[seat].bestPax
-                    } Pax</span></td>`
+                    `<td colspan="2"><span class="${getPaxTextClass(
+                        Math.round(solution[seat].bestPax),
+                        seat
+                    )}">${Math.round(solution[seat].bestPax)} Pax</span></td>`
                 );
                 $("#row-best-turnover").append(
                     `<td colspan="2">${solution[seat].bestTurnover.toLocaleString()} $</td>`
