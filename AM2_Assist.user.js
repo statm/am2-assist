@@ -368,23 +368,29 @@
     define(["marketing/pricing/[0-9]+"], function() {
         const SPINNER = `<img src="https://goo.gl/aFrC17" width="20">`;
 
+        const simulationCostBox = $(".demandSimulation > p:first-of-type");
+        if (simulationCostBox.length != 1) {
+            return;
+        }
+        const simulationCost = getIntFromElement(simulationCostBox);
+
         $(`<style type='text/css'>
+            #duperSimErrorBox { width: 598px; height: 40px; margin-bottom: 20px; padding: 0 12px; float: right; background-color: #fff2f2; color: #da4e28; display: flex; align-items: center }
+            #duperSimErrorMessage { margin-left: 5px }
             #duperSimTable { margin-top: 13px; margin-left: auto; width: 622px; table-layout: fixed }
             #duperSimTable tr { height: 35px }
             #duperSimTable tbody tr:nth-child(even) { background-color: #f3fafe }
             #duperSimTable td:first-child { width: 130px; text-align: right; padding-right: 5px }
             #duperSimTable tbody td:not(:first-child), #duperSimTable thead { font-weight: bold }
-            #duperSimTable td { vertical-align: middle; border-left: 2px solid #FFF; border-right: 2px solid #FFF }
+            #duperSimTable td { vertical-align: middle; border-left: 2px solid #fff; border-right: 2px solid #fff }
             #duperSimTable td:not(:first-child) { text-align: center }
-            #duperSimTable .new-segment { border-top: 1px dashed #AAA }
+            #duperSimTable .new-segment { border-top: 1px dashed #aaa }
             .num-pos { color: #8ecb47 }
             .num-neg { color: #da4e28 }
            </style>
         `).appendTo("head");
 
-        const simulationCost = getIntFromElement($(".demandSimulation > p:first-of-type"));
-
-        const duperSimHtml = $(`
+        $(`
             <hr class="myGreyhr">
             <div id="duperSimBox" class="secretaryBox" style="margin-top:13px;width:715px;min-height:128px">
                 <div class="avatar" style="float:left"><img src="https://goo.gl/i627mQ" style="margin-left:15px"></div>
@@ -393,45 +399,55 @@
                     <input type="button" id="duperSimButton" class="validBtn validBtnBlue" value="Perform a DUPER simulation with ${(
                         simulationCost * 5
                     ).toLocaleString()} $" style="position:absolute;top:47px;right:10px">
-                    </div>
-                    </div>
-        `);
-        $(".secretaryBox").after(duperSimHtml);
+                </div>
+                <div id="duperSimErrorBox"><strong>Error: </strong><span id="duperSimErrorMessage"></span></div>
+            </div>
+        `).appendTo(".secretaryBox");
 
-        const duperSimTable = $(`
-            <table id="duperSimTable">
-                <thead>
-                    <tr>
-                    <td></td><td colspan="2">Economy class</td><td colspan="2">Business class</td><td colspan="2">First class</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr id="row-starting-price" class="new-segment"><td>Starting Price</td></tr>
-                    <tr id="row-arrow-1"><td></td><td colspan="2">↓</td><td colspan="2">↓</td><td colspan="2">↓</td></tr>
-                    <tr id="row-pax-1"><td>Demand</td></tr>
-                    <tr id="row-supply"><td>Supply</td></tr>
-                    <tr id="row-price-step"><td>Price step</td></tr>
-                    <tr id="row-near-samples" class="new-segment"><td>Samples (Near)</td></tr>
-                    <tr id="row-arrow-2"><td></td><td>↓</td><td>↓</td><td>↓</td><td>↓</td><td>↓</td><td>↓</td></tr>
-                    <tr id="row-pax-2"><td>Demand</td></tr>
-                    <tr id="row-far-samples" class="new-segment"><td>Samples (Far)</td></tr>
-                    <tr id="row-arrow-3"><td></td><td>↓</td><td>↓</td><td>↓</td><td>↓</td><td>↓</td><td>↓</td></tr>
-                    <tr id="row-pax-3"><td>Demand</td></tr>
-                    <tr id="row-under-equation" class="new-segment"><td>Underprice Equation</td></tr>
-                    <tr id="row-over-equation"><td>Overprice Equation</td></tr>
-                    <tr id="row-ideal-price" class="new-segment"><td>Ideal price</td></tr>
-                    <tr id="row-arrow-4"><td></td><td colspan="2">↓</td><td colspan="2">↓</td><td colspan="2">↓</td></tr>
-                    <tr id="row-pax-4"><td>Demand</td></tr>
-                    <tr id="row-ideal-turnover"><td>Ideal Turnover</td></tr>
-                    <tr id="row-best-price" class="new-segment"><td>Best price</td></tr>
-                    <tr id="row-arrow-5"><td></td><td colspan="2">↓</td><td colspan="2">↓</td><td colspan="2">↓</td></tr>
-                    <tr id="row-pax-5"><td>Demand</td></tr>
-                    <tr id="row-best-turnover"><td>Best Turnover</td></tr>
-                </tbody>
-            </table>
-        `);
-        $("#duperSimBox").append(duperSimTable);
-        $("#duperSimTable thead, #duperSimTable tbody tr").hide();
+        const resetUI = function() {
+            $("#duperSimTable").remove();
+            $(`
+                <table id="duperSimTable">
+                    <thead>
+                        <tr>
+                        <td></td><td colspan="2">Economy class</td><td colspan="2">Business class</td><td colspan="2">First class</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="row-starting-price" class="new-segment"><td>Starting Price</td></tr>
+                        <tr id="row-arrow-1"><td></td><td colspan="2">↓</td><td colspan="2">↓</td><td colspan="2">↓</td></tr>
+                        <tr id="row-pax-1"><td>Demand</td></tr>
+                        <tr id="row-supply"><td>Supply</td></tr>
+                        <tr id="row-price-step"><td>Price step</td></tr>
+                        <tr id="row-near-samples" class="new-segment"><td>Samples (Near)</td></tr>
+                        <tr id="row-arrow-2"><td></td><td>↓</td><td>↓</td><td>↓</td><td>↓</td><td>↓</td><td>↓</td></tr>
+                        <tr id="row-pax-2"><td>Demand</td></tr>
+                        <tr id="row-far-samples" class="new-segment"><td>Samples (Far)</td></tr>
+                        <tr id="row-arrow-3"><td></td><td>↓</td><td>↓</td><td>↓</td><td>↓</td><td>↓</td><td>↓</td></tr>
+                        <tr id="row-pax-3"><td>Demand</td></tr>
+                        <tr id="row-under-equation" class="new-segment"><td>Underprice Equation</td></tr>
+                        <tr id="row-over-equation"><td>Overprice Equation</td></tr>
+                        <tr id="row-ideal-price" class="new-segment"><td>Ideal price</td></tr>
+                        <tr id="row-arrow-4"><td></td><td colspan="2">↓</td><td colspan="2">↓</td><td colspan="2">↓</td></tr>
+                        <tr id="row-pax-4"><td>Demand</td></tr>
+                        <tr id="row-ideal-turnover"><td>Ideal Turnover</td></tr>
+                        <tr id="row-best-price" class="new-segment"><td>Best price</td></tr>
+                        <tr id="row-arrow-5"><td></td><td colspan="2">↓</td><td colspan="2">↓</td><td colspan="2">↓</td></tr>
+                        <tr id="row-pax-5"><td>Demand</td></tr>
+                        <tr id="row-best-turnover"><td>Best Turnover</td></tr>
+                    </tbody>
+                </table>
+            `).appendTo("#duperSimBox");
+
+            $("#duperSimTable thead, #duperSimTable tbody tr, #duperSimErrorBox").hide();
+        };
+        resetUI();
+
+        const showError = function(message) {
+            $("#duperSimErrorMessage").text(message);
+            $("#duperSimErrorBox").show();
+            $("#duperSimErrorBox")[0].scrollIntoView({ behavior: "smooth" });
+        };
 
         $("#duperSimButton").click(async function() {
             const STEP_RATIO = 0.12;
@@ -440,8 +456,6 @@
             const ANIMATION_SPEED = 800;
             const [ECO, BUS, FIRST, CARGO] = [0, 1, 2, 3];
             const [L2, L1, R1, R2] = [0, 1, 2, 3];
-
-            const error = console.error;
 
             const lineId = $("input#lineId").val();
             const prices = $(".box1 div.price:contains('Ideal')")
@@ -458,6 +472,11 @@
                 prices.map((price, index) => price + 2 * step[index])
             ];
             const sim = [];
+
+            // ui reset
+            resetUI();
+
+            // TODO: possible error: You must perform an audit before DUPER Sim
 
             // iteration 0
             for (const seat of [ECO, BUS, FIRST]) {
@@ -518,8 +537,12 @@
 
             for (const seat of [ECO, BUS, FIRST]) {
                 if (Math.abs(sim[L1][seat].pax + sim[R1][seat].pax - 2 * demands[seat]) < PAX_EPSILON) {
-                    error("delta not significant");
-                    debugger;
+                    showError("Audit info is too outdated.");
+                    return;
+                }
+
+                if (sim[L1][seat].pax <= 0 || sim[R1][seat].pax <= 0) {
+                    showError("Zero pax encountered.");
                     return;
                 }
             }
@@ -552,6 +575,13 @@
                 $(`#cell-pax-3-${seat}-r`).html(
                     `<span class="${getPaxTextClass(sim[R2][seat].pax, seat)}">${sim[R2][seat].pax} Pax</span>`
                 );
+            }
+
+            for (const seat of [ECO, BUS, FIRST]) {
+                if (sim[L2][seat].pax <= 0 || sim[R2][seat].pax <= 0) {
+                    showError("Zero pax encountered.");
+                    return;
+                }
             }
 
             // data crunching
