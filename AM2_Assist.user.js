@@ -668,7 +668,7 @@
     // ========================================================
 
     // ======================== AJAX ==========================
-    async function loadStructralProfit(companyName) {
+    function loadStructralProfit(companyName) {
         return $.get(`/company/ranking/?searchTerm=${companyName}`).then(function(data) {
             const rankingBox = $($.parseHTML(data)).find(`div.box1:contains("${companyName}") .underBox4`);
             if (rankingBox.length == 0) {
@@ -678,7 +678,7 @@
         });
     }
 
-    async function loadNetworkData() {
+    function loadNetworkData() {
         return new Promise(function(resolve, reject) {
             const networkIFrame = $(
                 "<iframe src='http://www.airlines-manager.com/network/planning' width='0' height='0'/>"
@@ -737,7 +737,7 @@
         });
     }
 
-    async function loadSimulationResult(lineId, priceEco, priceBus, priceFirst, priceCargo) {
+    function loadSimulationResult(lineId, priceEco, priceBus, priceFirst, priceCargo) {
         const [ECO, BUS, FIRST, CARGO] = [0, 1, 2, 3];
         return $.post(`/marketing/pricing/priceSimulation/${lineId}`, {
             priceEco,
@@ -784,7 +784,7 @@
         }
     }
 
-    async function wait(predicate, interval, maxRetries) {
+    function wait(predicate, interval, maxRetries) {
         return new Promise(function(resolve, reject) {
             let tries = 0;
             const pollHandle = setInterval(function() {
@@ -810,7 +810,7 @@
         return airTime + logisticTime;
     }
 
-    async function sleep(msec) {
+    function sleep(msec) {
         return new Promise(function(resolve) {
             setTimeout(resolve, msec);
         });
@@ -827,7 +827,7 @@
 
     console.log(`===== AM2 Assist ${VERSION} =====`);
     for (const k in modules) {
-        if (pageUrl.match(new RegExp(k))) {
+        if (pageUrl.match(new RegExp(`^${k}$`))) {
             for (const funcPair of modules[k]) {
                 console.log(`Running module: ${funcPair[1]} (Pattern: ${k})`);
                 funcPair[0](k);
