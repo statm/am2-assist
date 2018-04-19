@@ -364,6 +364,15 @@
         }
     }, "AIRCRAFT FILTERING");
 
+    /* AIRCRAFT LIST STICKY HEADER */
+    define(["aircraft/buy/rental/[^/]+", "aircraft/buy/new/[0-9]+/[^/]+"], function() {
+        const filterAndWitnessBox = $(
+            `<div id='filterAndWitnessBox' style='position: sticky; top: 0; z-index: 9999; background: url(/images/interface/purchaseContainerMiddle_bg.png) -20px 0 repeat-y;'></div>`
+        );
+        $(".filterBox").before(filterAndWitnessBox);
+        $(".filterBox, .witnessLine").appendTo(filterAndWitnessBox);
+    }, "AIRCRAFT LIST STICKY HEADER");
+
     /* DUPERSIM */
     define(["marketing/pricing/[0-9]+"], function() {
         const SPINNER = `<img src="https://goo.gl/aFrC17" width="20">`;
