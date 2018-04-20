@@ -17,6 +17,7 @@
     const VERSION = "0.6.2";
     const ROOT_URL = "http://www.airlines-manager.com/";
     const DAYS_SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const AJAX_COOLDOWN = 500;
 
     const pageUrl = window.location.href.replace(ROOT_URL, "");
     const modules = {};
@@ -98,7 +99,7 @@
                         }
                     }
                 } else {
-                    setTimeout(play, 500);
+                    setTimeout(play, AJAX_COOLDOWN);
                 }
             });
         }
@@ -225,7 +226,7 @@
             .sort((r1, r2) => r2.distance - r1.distance);
 
         possibleRoutes.forEach(route => {
-            const flightTime = calculateFlightTime(route.distance, currentAircraftSpeed, networkData.flightParameters);
+            const flightTime = getFlightDuration(route.distance, currentAircraftSpeed, networkData.flightParameters);
             const flightTimeH = (flightTime / 60) | 0;
             const flightTimeM = flightTime % 60;
 
@@ -717,6 +718,69 @@
             }
         });
     }, "TC RATE DISPLAY");
+
+    /* DATA COLLECTION FOR AM2-INSIGHT */
+    define([".*"], function() {
+        window.addEventListener("keypress", async function(event) {
+            if (event.key == "?") {
+                const networkData = await loadNetworkData();
+                const priceData = await loadPriceData();
+
+                const planningList = [];
+
+                const aircraftList = networkData.aircraftList.map(function(aircraft) {
+                    $.merge(
+                        planningList,
+                        aircraft.planningList.map(planning => {
+                            return {
+                                takeOffTime: planning.takeOffTime,
+                                routeId: planning.lineId,
+                                aircraftId: planning.aircraftId
+                            };
+                        })
+                    );
+                    return copyWithProperties(aircraft, [
+                        "id",
+                        "name",
+                        "aircraftListName",
+                        "category",
+                        "range",
+                        "speed",
+                        "isRental",
+                        "isCargo",
+                        "seatsEco",
+                        "seatsBus",
+                        "seatsFirst",
+                        "payloadUsed"
+                    ]);
+                });
+
+                const routeList = networkData.routeList.map(function(route) {
+                    const result = copyWithProperties(route, [
+                        "id",
+                        "name",
+                        "distance",
+                        "category",
+                        "paxAttEco",
+                        "paxAttBus",
+                        "paxAttFirst",
+                        "paxAttCargo"
+                    ]);
+                    result.price = priceData[route.id];
+                    return result;
+                });
+
+                console.log(
+                    JSON.stringify({
+                        aircraftList,
+                        routeList,
+                        planningList,
+                        flightParameters: networkData.flightParameters
+                    })
+                );
+            }
+        });
+    }, "DATA COLLECTION FOR AM2-INSIGHT");
     // ========================================================
 
     // ======================== AJAX ==========================
@@ -826,6 +890,41 @@
             return data;
         });
     }
+
+    async function loadPriceData() {
+        const routePriceMap = {};
+
+        const auditPage = $($.parseHTML(await $.get("/marketing/internalAudit/lineList")));
+        const isAMPlus =
+            auditPage.find("table.internalAuditTable tbody tr").length >
+            auditPage.find("table.internalAuditTable tbody tr[id]").length;
+
+        for (const row of auditPage.find("table.internalAuditTable tbody tr[id]").toArray()) {
+            const routeId = $(row).attr("id");
+            let priceCells;
+
+            if (isAMPlus) {
+                priceCells = $(row)
+                    .next()
+                    .find("td:contains('$')");
+            } else {
+                console.log(`Loading line ${routeId}`);
+                const pricePage = $($.parseHTML(await $.get(`/marketing/pricing/${routeId}`)));
+                priceCells = pricePage.find(".box2 .priceBox .price:contains('Current') b");
+                await sleep(AJAX_COOLDOWN);
+            }
+
+            assert(priceCells.length == 4);
+            routePriceMap[routeId] = {
+                eco: getIntFromElement(priceCells.eq(0)),
+                bus: getIntFromElement(priceCells.eq(1)),
+                first: getIntFromElement(priceCells.eq(2)),
+                cargo: getIntFromElement(priceCells.eq(3))
+            };
+        }
+
+        return routePriceMap;
+    }
     // ========================================================
 
     // ===================== UTILS ============================
@@ -854,11 +953,9 @@
         });
     }
 
-    function calculateFlightTime(distance, speed, flightParameters) {
+    function getFlightDuration(distance, speed, flightParameters) {
         const airTime = Math.ceil(distance * 2 / speed * 4) * 15;
-        const logisticTime =
-            (flightParameters.boardingTime * 2 + flightParameters.landingTime * 2 + flightParameters.transitionTime) /
-            60;
+        const logisticTime = (flightParameters.boardingTime * 2 + flightParameters.landingTime * 2 + flightParameters.transitionTime) / 60;
         return airTime + logisticTime;
     }
 
@@ -874,6 +971,14 @@
 
     function getIntFromElement(element) {
         return getIntFromString(element.text());
+    }
+
+    function copyWithProperties(obj, props) {
+        const result = {};
+        props.forEach(k => {
+            result[k] = obj[k];
+        });
+        return result;
     }
 
     function getAircraftInfo(name) {
