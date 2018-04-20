@@ -405,9 +405,9 @@
                 <div class="avatar" style="float:left"><img src="https://goo.gl/i627mQ" style="margin-left:15px"></div>
                 <div class="explanation">
                     <p>The DUPER Simulation enables you to determine the best price to get a remaining demand close to zero. This feature is only to be used if flights are scheduled for this route.</p>
-                    <input type="button" id="duperSimButton" class="validBtn validBtnBlue" value="Perform a DUPER simulation with ${(
-                        simulationCost * 5
-                    ).toLocaleString()} $" style="position:absolute;top:47px;right:10px">
+                    <input type="button" id="duperSimButton" class="validBtn validBtnBlue"
+                        value="Perform a DUPER simulation with ${(simulationCost * 5).toLocaleString()} $"
+                        style="position:absolute;top:47px;right:10px">
                 </div>
                 <div id="duperSimErrorBox"><strong>Error: </strong><span id="duperSimErrorMessage"></span></div>
             </div>
@@ -688,7 +688,7 @@
     }
 
     function loadNetworkData() {
-        return new Promise(function(resolve, reject) {
+        return new Promise(function(resolve) {
             const networkIFrame = $(
                 "<iframe src='http://www.airlines-manager.com/network/planning' width='0' height='0'/>"
             );
