@@ -285,7 +285,11 @@
     /* MAXIMIZE LOAN AMOUNT */
     define(["finances/bank/[0-9]+/stockMarket/request"], function() {
         $("#request_amount").val($("#request_amount").attr("data-amount"));
-    }, "MAXIMIZE LOAN AMOUNT");
+    }, "MAXIMIZE LOAN AMOUNT (FM)");
+
+    define(["finances/bank/loan/[0-9]+/express"], function() {
+        $("#form_amount").val(getIntFromElement($("#loanExplanation div:nth-child(1) span")));
+    }, "MAXIMIZE LOAN AMOUNT (EXPRESS)");
 
     /* PRICE PER SEAT */
     define(["aircraft/buy/rental/[^/]+", "aircraft/buy/new/[0-9]+/[^/]+"], function(pattern) {
