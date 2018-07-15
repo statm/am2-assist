@@ -996,7 +996,9 @@
         { id: 131, name: "CS300", category: 4, speed: 850, range: 6100, price: 80380000, seats: 160, payload: 18.711 },
         { id: 132, name: "737-MAX8", category: 5, speed: 839, range: 5846, price: 110000000, seats: 189, payload: 18.9 },
         { id: 133, name: "A321neo", category: 5, speed: 839, range: 6644, price: 127000000, seats: 236, payload: 23.6 },
-        { id: 134, name: "A350-1000", category: 8, speed: 911, range: 14750, price: 335000000, seats: 522, payload: 56.1 }
+        { id: 134, name: "A350-1000", category: 8, speed: 911, range: 14750, price: 335000000, seats: 522, payload: 56.1 },
+        { id: 135, name: "737-MAX9", category: 6, speed: 839, range: 5846, price: 116000000, seats: 210, payload: 22 },
+        { id: 136, name: "787-10", category: 7, speed: 911, range: 10467, price: 257000000, seats: 440, payload: 44 }
     ];
     // ========================================================
 
