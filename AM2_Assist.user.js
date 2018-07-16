@@ -110,7 +110,7 @@
     }, "SKIP LOADING SCREEN");
 
     /* STAR PROGRESS BAR */
-    define(["home"], async function() {
+    define(["home.*"], async function() {
         const STAR_TABLE = [
             0,
             4000000,
