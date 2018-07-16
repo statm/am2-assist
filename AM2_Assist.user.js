@@ -372,7 +372,7 @@
     /* AIRCRAFT LIST STICKY HEADER */
     define(["aircraft/buy/rental/[^/]+", "aircraft/buy/new/[0-9]+/[^/]+"], function() {
         const filterAndWitnessBox = $(
-            `<div id='filterAndWitnessBox' style='position: sticky; top: 0; z-index: 9999; background: url(/images/interface/purchaseContainerMiddle_bg.png) -20px 0 repeat-y;'></div>`
+            `<div id='filterAndWitnessBox' style='position: sticky; top: 0; z-index: 1; background: url(/images/interface/purchaseContainerMiddle_bg.png) -20px 0 repeat-y;'></div>`
         );
         $(".filterBox").before(filterAndWitnessBox);
         $(".filterBox, .witnessLine").appendTo(filterAndWitnessBox);
@@ -724,6 +724,26 @@
             }
         });
     }, "TC RATE DISPLAY");
+
+    /* ROUTE FILTERING */
+    define(["network/newLine/[0-9]+/[a-z]+"], function() {
+        $(`<label><input type="checkbox" id="toggleRouteFiltering" style="margin-right:4px;vertical-align:middle">Filter unavailable routes</label>`).appendTo(".filterBox1");
+        $(".otherTools").removeAttr("data-title");
+        $("#toggleRouteFiltering, #aircraftListSelect").change(function() {
+            $(".hubListBox").each(function() {
+                if ($(this).hasClass("disabled") && $("#toggleRouteFiltering").prop("checked")) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }
+            })
+        });
+    }, "ROUTE FILTERING");
+
+    /* ROUTE LIST STICKY HEADER */
+    define(["network/newLine/[0-9]+/[a-z]+"], function() {
+        $(".mainFilterBox").css({ position: "sticky", top: 0, "z-index": 1, "background-color": "#565a66", "padding-top": "10px", "padding-bottom": "10px" });
+    }, "ROUTE LIST STICKY HEADER");
     // ========================================================
 
     // ======================== AJAX ==========================
