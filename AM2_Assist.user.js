@@ -690,7 +690,9 @@
             const labelText = $(this).text();
             const tcPrice = getIntFromElement($(this).next());
 
-            if (labelText.startsWith("Aircraft ")) {
+            if (labelText.startsWith("Tax")) {
+                return;
+            } else if (labelText.startsWith("Aircraft ")) {
                 const aircraftName = $(this).text().replace("Aircraft ", "");
                 const aircraftInfo = getAircraftInfo(aircraftName);
                 if (!aircraftInfo) {
