@@ -192,94 +192,110 @@
             .pax-box { width: 36px; font-weight: bold }
             .num-pos { color: #8ecb47 }
             .num-neg { color: #da4e28 }
-           </style>`).appendTo("head");
-        const reconfigBox = $("<div id='reconfigBox'></div>");
+        </style>`).appendTo("head");
+
+        const reconfigBox = $(`<div id="reconfigBox"><div style="line-height:290px;text-align:center"><img src="https://goo.gl/aFrC17" width="20"><span style="vertical-align:middle;margin-left:3px;color:#585d69">Loading...</span></div></div>`);
+        const ownAircraftMatch = pageUrl.match(/aircraft\/show\/([0-9]+)\/reconfigure/);
+        if (!ownAircraftMatch) {
+            reconfigBox.css({ height: "300px", "margin-top": "70px" });
+        }
+        $("#box2").after(reconfigBox);
 
         const networkData = await loadNetworkData();
 
-        let currentAircraftSpeed;
-        let currentAircraftRange;
-        let currentAircraftCategory;
-        let ownAircraftMatch = pageUrl.match(/aircraft\/show\/([0-9]+)\/reconfigure/);
+        const displayRelevantRoutes = function() {
+            let currentAircraftSpeed;
+            let currentAircraftRange;
+            let currentAircraftCategory;
+            let currentAircraftLocation;
 
-        if (ownAircraftMatch) {
-            const currentAircraftId = ownAircraftMatch[1];
-            currentAircraftSpeed = networkData.aircraftMap[currentAircraftId].speed;
-            currentAircraftRange = networkData.aircraftMap[currentAircraftId].range;
-            currentAircraftCategory = networkData.aircraftMap[currentAircraftId].category;
-        } else {
-            const aircraftPurchaseBox = $(".aircraftPurchaseBox");
-            currentAircraftSpeed = getIntFromElement(aircraftPurchaseBox.find("li:contains('Speed') b"));
-            currentAircraftRange = getIntFromElement(aircraftPurchaseBox.find("li:contains('Range') b"));
-            currentAircraftCategory = parseInt(
-                aircraftPurchaseBox
-                    .find(".title img")
-                    .attr("alt")
-                    .replace("cat", "")
-            );
-            reconfigBox.css({ height: "300px", "margin-top": "70px" });
-        }
-
-        const possibleRoutes = networkData.routeList
-            .filter(route => route.distance <= currentAircraftRange && route.category >= currentAircraftCategory)
-            .sort((r1, r2) => r2.distance - r1.distance);
-
-        possibleRoutes.forEach(route => {
-            const flightTime = calculateFlightTime(route.distance, currentAircraftSpeed, networkData.flightParameters);
-            const flightTimeH = (flightTime / 60) | 0;
-            const flightTimeM = flightTime % 60;
-
-            const titleBox = $(
-                `<div class='route-title'>
-                    <span class='route-name'>${route.name}</span>
-                    <span class='route-dist'>${route.distance}km (${flightTimeH}h${flightTimeM})</span>
-                    </div>`
-            );
-            reconfigBox.append(titleBox);
-
-            const paxGroup = [];
-            for (let i = 0; i < route.remaining.length; ++i) {
-                const currentPax = route.remaining[i];
-                if (paxGroup.length == 0) {
-                    paxGroup.push({ days: [i], pax: currentPax });
-                    continue;
-                }
-
-                const lastPax = paxGroup[paxGroup.length - 1];
-                if (
-                    currentPax.eco == lastPax.pax.eco &&
-                    currentPax.bus == lastPax.pax.bus &&
-                    currentPax.first == lastPax.pax.first &&
-                    currentPax.cargo == lastPax.pax.cargo
-                ) {
-                    lastPax.days.push(i);
-                } else {
-                    paxGroup.push({ days: [i], pax: currentPax });
-                }
+            if (ownAircraftMatch) {
+                const currentAircraftId = ownAircraftMatch[1];
+                currentAircraftSpeed = networkData.aircraftMap[currentAircraftId].speed;
+                currentAircraftRange = networkData.aircraftMap[currentAircraftId].range;
+                currentAircraftCategory = networkData.aircraftMap[currentAircraftId].category;
+                currentAircraftLocation = $(".aircraftMainInfo span:eq(2)").text().replace(" /", "");
+            } else {
+                const aircraftPurchaseBox = $(".aircraftPurchaseBox");
+                currentAircraftSpeed = getIntFromElement(aircraftPurchaseBox.find("li:contains('Speed') b"));
+                currentAircraftRange = getIntFromElement(aircraftPurchaseBox.find("li:contains('Range') b"));
+                currentAircraftCategory = parseInt(
+                    aircraftPurchaseBox
+                        .find(".title img")
+                        .attr("alt")
+                        .replace("cat", "")
+                );
+                currentAircraftLocation = $("#aircraft_hub option:selected").text().split(" - ")[0];
             }
 
-            const getPaxTextClass = pax => (pax >= 0 ? "num-pos" : "num-neg");
+            const possibleRoutes = networkData.routeList
+                .filter(route => route.distance <= currentAircraftRange && route.category >= currentAircraftCategory && route.name.startsWith(currentAircraftLocation))
+                .sort((r1, r2) => r2.distance - r1.distance);
 
-            paxGroup.forEach(paxSeg => {
-                const dayText =
-                    paxSeg.days.length == 1
-                        ? `${DAYS_SHORT[paxSeg.days[0]]}`
-                        : `${DAYS_SHORT[paxSeg.days[0]]}-${DAYS_SHORT[paxSeg.days[paxSeg.days.length - 1]]}`;
-                const paxData = paxSeg.pax;
-                const paxBox = $(
-                    `<div class='pax-line'>
-                        <span class='day-box'>${dayText}</span>
-                        <span class='pax-box ${getPaxTextClass(paxData.eco)}'>${paxData.eco}</span>
-                        <span class='pax-box ${getPaxTextClass(paxData.bus)}'>${paxData.bus}</span>
-                        <span class='pax-box ${getPaxTextClass(paxData.first)}'>${paxData.first}</span>
-                        <span class='pax-box ${getPaxTextClass(paxData.cargo)}'>${paxData.cargo}T</span>
+            reconfigBox.empty();
+            if (possibleRoutes.length == 0) {
+                reconfigBox.html(`<div style="line-height:290px;text-align:center"><span style="vertical-align:middle;margin-left:3px;color:#585d69">No routes available</span></div>`);
+            }
+            possibleRoutes.forEach(route => {
+                const flightTime = calculateFlightTime(route.distance, currentAircraftSpeed, networkData.flightParameters);
+                const flightTimeH = (flightTime / 60) | 0;
+                const flightTimeM = flightTime % 60;
+
+                const titleBox = $(
+                    `<div class='route-title'>
+                        <span class='route-name'>${route.name}</span>
+                        <span class='route-dist'>${route.distance}km (${flightTimeH}h${flightTimeM})</span>
                         </div>`
                 );
-                reconfigBox.append(paxBox);
-            });
-        });
+                reconfigBox.append(titleBox);
 
-        $("#box2").after(reconfigBox);
+                const paxGroup = [];
+                for (let i = 0; i < route.remaining.length; ++i) {
+                    const currentPax = route.remaining[i];
+                    if (paxGroup.length == 0) {
+                        paxGroup.push({ days: [i], pax: currentPax });
+                        continue;
+                    }
+
+                    const lastPax = paxGroup[paxGroup.length - 1];
+                    if (
+                        currentPax.eco == lastPax.pax.eco &&
+                        currentPax.bus == lastPax.pax.bus &&
+                        currentPax.first == lastPax.pax.first &&
+                        currentPax.cargo == lastPax.pax.cargo
+                    ) {
+                        lastPax.days.push(i);
+                    } else {
+                        paxGroup.push({ days: [i], pax: currentPax });
+                    }
+                }
+
+                const getPaxTextClass = pax => (pax >= 0 ? "num-pos" : "num-neg");
+
+                paxGroup.forEach(paxSeg => {
+                    const dayText =
+                        paxSeg.days.length == 1
+                            ? `${DAYS_SHORT[paxSeg.days[0]]}`
+                            : `${DAYS_SHORT[paxSeg.days[0]]}-${DAYS_SHORT[paxSeg.days[paxSeg.days.length - 1]]}`;
+                    const paxData = paxSeg.pax;
+                    const paxBox = $(
+                        `<div class='pax-line'>
+                            <span class='day-box'>${dayText}</span>
+                            <span class='pax-box ${getPaxTextClass(paxData.eco)}'>${paxData.eco}</span>
+                            <span class='pax-box ${getPaxTextClass(paxData.bus)}'>${paxData.bus}</span>
+                            <span class='pax-box ${getPaxTextClass(paxData.first)}'>${paxData.first}</span>
+                            <span class='pax-box ${getPaxTextClass(paxData.cargo)}'>${paxData.cargo}T</span>
+                            </div>`
+                    );
+                    reconfigBox.append(paxBox);
+                });
+            });
+            reconfigBox.scrollTop(0);
+        };
+
+        displayRelevantRoutes();
+        $("#aircraft_hub").change(displayRelevantRoutes);
+
     }, "RECONFIGURATION ASSIST");
 
     /* MAXIMIZE LOAN AMOUNT (FM) */
