@@ -760,6 +760,38 @@
     define(["network/newLine/[0-9]+/[a-z]+"], function() {
         $(".mainFilterBox").css({ position: "sticky", top: 0, "z-index": 1, "background-color": "#565a66", "padding-top": "10px", "padding-bottom": "10px" });
     }, "ROUTE LIST STICKY HEADER");
+
+    /* AUDIT PRICE APPLYING */
+    define(["marketing/pricing/[0-9]+(\\?.*)?"], function() {
+        if ($(".box1").length == 0) {
+            // No audit result
+            return;
+        }
+
+        assert($("a.marketing_PriceLink").length == 1);
+        $(`<a id="applyIdealPricesButton" class="gradientButton gradientButtonYellow" style="float:right;cursor:pointer;user-select:none">
+            <img src="https://goo.gl/Tpw577" width="28" height="28">
+            <span>Apply ideal prices</span>
+        </a>`).insertBefore("a.marketing_PriceLink");
+        $("#applyIdealPricesButton, a.marketing_PriceLink").wrapAll(`<div/>`);
+
+        $("#applyIdealPricesButton").click(function() {
+            if (!$(".reliability0").text().startsWith("Recent")) {
+                if (!confirm("Audit result is not up to date, continue?")) {
+                    return;
+                }
+            }
+
+            assert($(".box1 .price b").length == 4);
+            $("#line_priceEco").val(getIntFromString($(".box1 .price b")[0].innerText));
+            $("#line_priceBus").val(getIntFromString($(".box1 .price b")[1].innerText));
+            $("#line_priceFirst").val(getIntFromString($(".box1 .price b")[2].innerText));
+            $("#line_priceCargo").val(getIntFromString($(".box1 .price b")[3].innerText));
+
+            $("#applyIdealPricesButton")[0].scrollIntoView({ block: "start", behavior: "smooth" });
+            $("form.submitButton input[type=number]").effect("highlight", {}, 1500);
+        });
+    }, "AUDIT PRICE APPLYING");
     // ========================================================
 
     // ======================== AJAX ==========================
