@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AM2 Assist
 // @namespace    http://tampermonkey.net/
-// @version      0.6.3
+// @version      0.6.4
 // @description  Airlines Manager 2 Assist
 // @author       statm
 // @contributor  henryzhou
@@ -14,7 +14,7 @@
 (function() {
     "use strict";
 
-    const VERSION = "0.6.2";
+    const VERSION = "0.6.4";
     const ROOT_URL = "http://www.airlines-manager.com/";
     const DAYS_SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -788,10 +788,22 @@
             $("#line_priceFirst").val(getIntFromString($(".box1 .price b")[2].innerText));
             $("#line_priceCargo").val(getIntFromString($(".box1 .price b")[3].innerText));
 
-            $("#applyIdealPricesButton")[0].scrollIntoView({ block: "start", behavior: "smooth" });
-            $("form.submitButton input[type=number]").effect("highlight", {}, 1500);
+            $("form.submitButton input[type=submit]").click();
         });
     }, "AUDIT PRICE APPLYING");
+
+    /* AUDIT LIST ENHANCEMENT */
+    define(["marketing/internalAudit/lineList(\\?.*)?"], function() {
+        $("td.reliability").next().each(function() {
+            const pricingUrl = $(this).find("a").attr("href").replace("internalAudit", "pricing");
+            
+            const pricingLink = $(`<a href="${pricingUrl}">
+                                    <img class="auditIcon" src="/images/icons30/marketing_globalPricing.png?v1.6.11" width="20" height="20" title="Pricing details">
+                                </a>`);
+            pricingLink.tooltip({ position: { of: pricingLink, my: "bottom", at: "top-3px" } });
+            $(this).css({ width: "55px" }).append(pricingLink);
+        });
+    }, "AUDIT LIST ENHANCEMENT");
     // ========================================================
 
     // ======================== AJAX ==========================
