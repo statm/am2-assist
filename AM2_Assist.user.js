@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         AM2 Assist
 // @namespace    http://tampermonkey.net/
-// @version      0.6.4
+// @version      0.6.5
 // @description  Airlines Manager 2 Assist
 // @author       statm
 // @contributor  henryzhou
 // @license      MIT
 // @match        http://www.airlines-manager.com/*
+// @match        https://www.airlines-manager.com/*
 // @grant        none
 // @updateURL    https://github.com/statm/am2-assist/raw/master/AM2_Assist.user.js
 // ==/UserScript==
@@ -14,8 +15,8 @@
 (function() {
     "use strict";
 
-    const VERSION = "0.6.4";
-    const ROOT_URL = "http://www.airlines-manager.com/";
+    const VERSION = "0.6.5";
+    const ROOT_URL = /http(s)?:\/\/www.airlines-manager.com\//;
     const DAYS_SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
     const pageUrl = window.location.href.replace(ROOT_URL, "");
@@ -194,7 +195,7 @@
             .num-neg { color: #da4e28 }
         </style>`).appendTo("head");
 
-        const reconfigBox = $(`<div id="reconfigBox"><div style="line-height:290px;text-align:center"><img src="https://goo.gl/aFrC17" width="20"><span style="vertical-align:middle;margin-left:3px;color:#585d69">Loading...</span></div></div>`);
+        const reconfigBox = $(`<div id="reconfigBox"><div style="line-height:290px;text-align:center"><img src="//goo.gl/aFrC17" width="20"><span style="vertical-align:middle;margin-left:3px;color:#585d69">Loading...</span></div></div>`);
         const ownAircraftMatch = pageUrl.match(/aircraft\/show\/([0-9]+)\/reconfigure/);
         if (!ownAircraftMatch) {
             reconfigBox.css({ height: "300px", "margin-top": "70px" });
@@ -396,7 +397,7 @@
 
     /* DUPERSIM */
     define(["marketing/pricing/[0-9]+"], function() {
-        const SPINNER = `<img src="https://goo.gl/aFrC17" width="20">`;
+        const SPINNER = `<img src="//goo.gl/aFrC17" width="20">`;
 
         const simulationCostBox = $(".demandSimulation > p:first-of-type");
         if (simulationCostBox.length != 1) {
@@ -423,7 +424,7 @@
         $(`
             <hr class="myGreyhr">
             <div id="duperSimBox" class="secretaryBox" style="margin-top:13px;width:715px;min-height:128px">
-                <div class="avatar" style="float:left"><img src="https://goo.gl/i627mQ" style="margin-left:15px"></div>
+                <div class="avatar" style="float:left"><img src="//goo.gl/i627mQ" style="margin-left:15px"></div>
                 <div class="explanation">
                     <p>The DUPER Simulation enables you to determine the best price to get a remaining demand close to zero. This feature is only to be used if flights are scheduled for this route.</p>
                     <input type="button" id="duperSimButton" class="validBtn validBtnBlue"
@@ -770,7 +771,7 @@
 
         assert($("a.marketing_PriceLink").length == 1);
         $(`<a id="applyIdealPricesButton" class="gradientButton gradientButtonYellow" style="float:right;cursor:pointer;user-select:none">
-            <img src="https://goo.gl/Tpw577" width="28" height="28">
+            <img src="//goo.gl/Tpw577" width="28" height="28">
             <span>Apply ideal prices</span>
         </a>`).insertBefore("a.marketing_PriceLink");
         $("#applyIdealPricesButton, a.marketing_PriceLink").wrapAll(`<div/>`);
@@ -820,7 +821,7 @@
     function loadNetworkData() {
         return new Promise(function(resolve) {
             const networkIFrame = $(
-                "<iframe src='http://www.airlines-manager.com/network/planning' width='0' height='0'/>"
+                "<iframe src='/network/planning' width='0' height='0'/>"
             );
             networkIFrame.load(async function() {
                 await wait(() => networkIFrame[0].contentWindow.hasAlreadyRegroupedData, 100, 50);
