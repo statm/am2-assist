@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AM2 Assist
 // @namespace    http://tampermonkey.net/
-// @version      0.6.5
+// @version      0.6.6
 // @description  Airlines Manager 2 Assist
 // @author       statm
 // @contributor  henryzhou
@@ -15,7 +15,7 @@
 (function() {
     "use strict";
 
-    const VERSION = "0.6.5";
+    const VERSION = "0.6.6";
     const ROOT_URL = /http(s)?:\/\/www.airlines-manager.com\//;
     const DAYS_SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -33,7 +33,7 @@
 
     // ================ PAGE MODULES ==========================
     /* SLOT MACHINE AUTOMATION */
-    define(["company/cockpitASous"], function() {
+    define(["company/cockpitasous"], function() {
         let playing = false;
         let gameCount = 0;
         let logText = "";
