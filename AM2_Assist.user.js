@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         AM2 Assist
 // @namespace    http://tampermonkey.net/
-// @version      0.6.7
+// @version      0.6.8
 // @description  Airlines Manager 2 Assist
 // @author       statm
 // @contributor  henryzhou
+// @contributor  jiak94
 // @license      MIT
 // @match        http://www.airlines-manager.com/*
 // @match        https://www.airlines-manager.com/*
@@ -104,6 +105,14 @@
             });
         }
     }, "SLOT MACHINE AUTOMATION");
+	
+	/* UNFOLD AGENDA */
+    define(["home.*"], function() {
+        $('.li_puce').css('display', 'none');
+        $('.objectifDetails').css('display', 'block');
+        $('.validBtn').css('display', 'none');
+        $('.objectifDetails > .li_puce').css('display', 'block');
+    }, "UNFOLD AGENDA");
 
     /* SKIP LOADING SCREEN */
     define(["home/loading"], function() {
