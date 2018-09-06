@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AM2 Assist
 // @namespace    http://tampermonkey.net/
-// @version      0.6.6
+// @version      0.6.7
 // @description  Airlines Manager 2 Assist
 // @author       statm
 // @contributor  henryzhou
@@ -15,7 +15,7 @@
 (function() {
     "use strict";
 
-    const VERSION = "0.6.6";
+    const VERSION = "0.6.7";
     const ROOT_URL = /http(s)?:\/\/www.airlines-manager.com\//;
     const DAYS_SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -62,7 +62,7 @@
             playing = true;
             ++gameCount;
             log(`Game ${gameCount}...`);
-            $.get("cockpitASous/play", function(resp) {
+            $.get("cockpitasous/play", function(resp) {
                 const data = $.parseJSON(resp);
 
                 if (data.errorMsg) {
