@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AM2 Assist
 // @namespace    http://tampermonkey.net/
-// @version      0.6.8
+// @version      0.7.1
 // @description  Airlines Manager 2 Assist
 // @author       statm
 // @contributor  henryzhou
@@ -16,7 +16,7 @@
 (function() {
     "use strict";
 
-    const VERSION = "0.6.7";
+    const VERSION = "0.7.1";
     const ROOT_URL = /http(s)?:\/\/www.airlines-manager.com\//;
     const DAYS_SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     const AJAX_COOLDOWN = 500;
@@ -106,8 +106,8 @@
             });
         }
     }, "SLOT MACHINE AUTOMATION");
-	
-	/* UNFOLD AGENDA */
+
+    /* UNFOLD AGENDA */
     define(["home.*"], function() {
         $('.li_puce').css('display', 'none');
         $('.objectifDetails').css('display', 'block');
