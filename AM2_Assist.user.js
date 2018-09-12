@@ -862,10 +862,17 @@
         window.addEventListener("keyup", async function(event) {
             // Ctrl + Alt + /
             if (event.key == "/" && event.altKey && event.ctrlKey && !event.shiftKey) {
-                const start = getIntFromString(prompt("Begin ID"));
-                const end = getIntFromString(prompt("End ID"));
-                const workshopInfo = await loadWorkshopInfo(start, end);
                 const HIGHLIGHT_THRESHOLD = 7.5;
+
+                const startStr = prompt("Begin ID");
+                if (!startStr) {
+                    return;
+                }
+                const endStr = prompt("End ID");
+                if (!endStr) {
+                    return;
+                }
+                const workshopInfo = await loadWorkshopInfo(getIntFromString(startStr), getIntFromString(endStr));
 
                 // Print
                 let printOutput = "";
