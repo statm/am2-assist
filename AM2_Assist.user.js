@@ -310,7 +310,7 @@
     }, "RECONFIGURATION ASSIST");
 
     /* MAXIMIZE LOAN AMOUNT (FM) */
-    define(["finances/bank/[0-9]+/stockMarket/request"], function() {
+    define(["finances/bank/[0-9]+/stockmarket/request"], function() {
         $("#request_amount").val($("#request_amount").attr("data-amount"));
     }, "MAXIMIZE LOAN AMOUNT (FM)");
 
@@ -753,7 +753,7 @@
     }, "TC RATE DISPLAY");
 
     /* ROUTE FILTERING */
-    define(["network/newLine/[0-9]+/[a-z]+"], function() {
+    define(["network/newline/[0-9]+/[a-z]+"], function() {
         $(`<label><input type="checkbox" id="toggleRouteFiltering" style="margin-right:4px;vertical-align:middle">Filter unavailable routes</label>`).appendTo(".filterBox1");
         $(".otherTools").removeAttr("data-title");
         $("#toggleRouteFiltering, #aircraftListSelect").change(function() {
@@ -768,7 +768,7 @@
     }, "ROUTE FILTERING");
 
     /* ROUTE LIST STICKY HEADER */
-    define(["network/newLine/[0-9]+/[a-z]+"], function() {
+    define(["network/newline/[0-9]+/[a-z]+"], function() {
         $(".mainFilterBox").css({ position: "sticky", top: 0, "z-index": 1, "background-color": "#565a66", "padding-top": "10px", "padding-bottom": "10px" });
     }, "ROUTE LIST STICKY HEADER");
 
@@ -804,7 +804,7 @@
     }, "AUDIT PRICE APPLYING");
 
     /* AUDIT LIST ENHANCEMENT */
-    define(["marketing/internalAudit/lineList(\\?.*)?"], function() {
+    define(["marketing/internalaudit/linelist(\\?.*)?"], function() {
         $("td.reliability").next().each(function() {
             const pricingUrl = $(this).find("a").attr("href").replace("internalAudit", "pricing");
             
@@ -822,8 +822,8 @@
             // Ctrl + /
             if (event.key == "/" && !event.altKey && event.ctrlKey && !event.shiftKey) {
                 const output = JSON.stringify(await loadPlayerData());
-                console.log(output);
                 GM_setClipboard(output);
+                console.log("Player data copied to clipboard");
             }
         });
     }, "PLAYER DATA COLLECTION (CTRL+/)");
@@ -835,13 +835,14 @@
             if (event.key == "?" && !event.altKey && event.ctrlKey && event.shiftKey) {
                 const aircraftInfo = await loadAircraftInfo();
 
-                // Print
+                // Copy
                 let output = "";
                 for (const aircraft of aircraftInfo) {
                     output += JSON.stringify(aircraft, ["id", "name", "category", "speed", "range", "price", "seats", "payload"]) + ",\n";
                 }
                 output = `[\n${output}]`;
                 GM_setClipboard(output);
+                console.log("Aircraft list copied to clipboard");
 
                 // Verification
                 assert(aircraftInfo.length == AIRCRAFT_INFO.length);
@@ -889,6 +890,7 @@
 
                 console.log.apply(this, [printOutput, ...formatArray]);
                 GM_setClipboard(`${copyOutput}\nHighlights:\n${copyOutputHighlights}`);
+                console.log("Workshop info copied to clipboard");
             }
         });
     }, "WORKSHOP SCAN (CTRL+ALT+/)");
@@ -1005,7 +1007,7 @@
     async function loadPriceData() {
         const routePriceMap = {};
 
-        const auditPage = $($.parseHTML(await $.get("/marketing/internalAudit/lineList")));
+        const auditPage = $($.parseHTML(await $.get("/marketing/internalaudit/linelist")));
         const isAMPlus =
             auditPage.find("table.internalAuditTable tbody tr").length >
             auditPage.find("table.internalAuditTable tbody tr[id]").length;
