@@ -9,7 +9,7 @@
 // @license      MIT
 // @match        http://www.airlines-manager.com/*
 // @match        https://www.airlines-manager.com/*
-// @grant        none
+// @grant        GM_setClipboard
 // @updateURL    https://github.com/statm/am2-assist/raw/master/AM2_Assist.user.js
 // ==/UserScript==
 
@@ -821,7 +821,9 @@
         window.addEventListener("keyup", async function(event) {
             // Ctrl + /
             if (event.key == "/" && !event.altKey && event.ctrlKey && !event.shiftKey) {
-                console.log(JSON.stringify(await loadPlayerData()));
+                const output = JSON.stringify(await loadPlayerData());
+                console.log(output);
+                GM_setClipboard(output);
             }
         });
     }, "PLAYER DATA COLLECTION (CTRL+/)");
@@ -839,7 +841,7 @@
                     output += JSON.stringify(aircraft, ["id", "name", "category", "speed", "range", "price", "seats", "payload"]) + ",\n";
                 }
                 output = `[\n${output}]`;
-                console.log(output);
+                GM_setClipboard(output);
 
                 // Verification
                 assert(aircraftInfo.length == AIRCRAFT_INFO.length);
@@ -853,6 +855,43 @@
         });
     }, "AIRCRAFT INFO COLLECTION (CTRL+SHIFT+/)");
 
+    /* WORKSHOP SCAN */
+    define([".*"], function() {
+        //workshopInfo.push({id, tcPrice, itemName, tcRate});
+        window.addEventListener("keyup", async function(event) {
+            // Ctrl + Alt + /
+            if (event.key == "/" && event.altKey && event.ctrlKey && !event.shiftKey) {
+                const start = getIntFromString(prompt("Begin ID"));
+                const end = getIntFromString(prompt("End ID"));
+                const workshopInfo = await loadWorkshopInfo(start, end);
+                const HIGHLIGHT_THRESHOLD = 7.5;
+
+                // Print
+                let printOutput = "";
+                const formatArray = [];
+
+                // Copy
+                let copyOutput = "";
+                let copyOutputHighlights = "";
+
+                for (const item of workshopInfo) {
+                    const itemLine = `${item.id}|${item.tcPrice}|${item.itemName}|${item.tcRate}\n`;
+                    copyOutput += itemLine;
+
+                    if (item.tcRate > HIGHLIGHT_THRESHOLD) {
+                        printOutput += `%c${itemLine}%c`;
+                        formatArray.push("color:red", "color:none");
+                        copyOutputHighlights += itemLine;
+                    } else {
+                        printOutput += itemLine;
+                    }
+                }
+
+                console.log.apply(this, [printOutput, ...formatArray]);
+                GM_setClipboard(`${copyOutput}\nHighlights:\n${copyOutputHighlights}`);
+            }
+        });
+    }, "WORKSHOP SCAN (CTRL+ALT+/)");
     // ========================================================
 
     // ======================== AJAX ==========================
@@ -1070,6 +1109,35 @@
         }
 
         return aircraftInfo.sort((a, b) => a.id - b.id);
+    }
+
+    async function loadWorkshopInfo(start, end) {
+        const workshopInfo = [];
+        let id = start;
+        while (id <= end) {
+            const page = $($.parseHTML(await $.get(`/shop/enablebonus/${id}`)));
+            let popUp = page.find(".popupMiddle");
+            if (popUp.length > 0 && !popUp.text().includes("An error") && popUp.find("p").length > 1){
+                const tcPrice = getIntFromString(popUp.find("p")[0].innerText.trim());
+                const itemName = popUp.find("p")[1].innerText.trim();
+                let tcRate = 0;
+                if (itemName.startsWith("Tax")) {
+                    return;
+                }
+                else if (itemName.startsWith("Aircraft")) {
+                    let aircraft = getAircraftInfo(itemName.replace("Aircraft ", ""));
+                    if (aircraft) {
+                        tcRate = getAircraftInfo(itemName.replace("Aircraft ", "")).price / tcPrice / 1000;
+                    }
+                } else if (itemName.endsWith(" $")) {
+                    let money = getIntFromString(itemName);
+                    tcRate = money / tcPrice / 1000;
+                }
+                workshopInfo.push({id, tcPrice, itemName, tcRate});
+            }
+            ++id;
+        }
+        return workshopInfo.sort((a, b) => a.id - b.id);
     }
     // ========================================================
 
