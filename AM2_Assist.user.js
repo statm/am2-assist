@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AM2 Assist
 // @namespace    http://tampermonkey.net/
-// @version      0.7.1
+// @version      0.7.2
 // @description  Airlines Manager 2 Assist
 // @author       statm
 // @contributor  henryzhou
@@ -16,7 +16,7 @@
 (function() {
     "use strict";
 
-    const VERSION = "0.7.1";
+    const VERSION = "0.7.2";
     const ROOT_URL = /http(s)?:\/\/www.airlines-manager.com\//;
     const DAYS_SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     const AJAX_COOLDOWN = 500;
@@ -1131,7 +1131,7 @@
                 const itemName = popUp.find("p")[1].innerText.trim();
                 let tcRate = 0;
                 if (itemName.startsWith("Tax")) {
-                    return;
+                    //
                 }
                 else if (itemName.startsWith("Aircraft")) {
                     let aircraft = getAircraftInfo(itemName.replace("Aircraft ", ""));
