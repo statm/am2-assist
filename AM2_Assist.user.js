@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AM2 Assist
 // @namespace    http://tampermonkey.net/
-// @version      0.7.2
+// @version      0.7.3
 // @description  Airlines Manager 2 Assist
 // @author       statm
 // @contributor  henryzhou
@@ -16,7 +16,7 @@
 (function() {
     "use strict";
 
-    const VERSION = "0.7.2";
+    const VERSION = "0.7.3";
     const ROOT_URL = /http(s)?:\/\/www.airlines-manager.com\//;
     const DAYS_SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     const AJAX_COOLDOWN = 500;
@@ -248,7 +248,7 @@
                 reconfigBox.html(`<div style="line-height:290px;text-align:center"><span style="vertical-align:middle;margin-left:3px;color:#585d69">No routes available</span></div>`);
             }
             possibleRoutes.forEach(route => {
-                const flightTime = calculateFlightTime(route.distance, currentAircraftSpeed, networkData.flightParameters);
+                const flightTime = getFlightDuration(route.distance, currentAircraftSpeed, networkData.flightParameters);
                 const flightTimeH = (flightTime / 60) | 0;
                 const flightTimeM = flightTime % 60;
 
@@ -1015,15 +1015,13 @@
         const routePriceMap = {};
 
         const auditPage = $($.parseHTML(await $.get("/marketing/internalaudit/linelist")));
-        const isAMPlus =
-            auditPage.find("table.internalAuditTable tbody tr").length >
-            auditPage.find("table.internalAuditTable tbody tr[id]").length;
+        const amPlus = await isAMPlus();
 
         for (const row of auditPage.find("table.internalAuditTable tbody tr[id]").toArray()) {
             const routeId = $(row).attr("id");
             let priceCells;
 
-            if (isAMPlus) {
+            if (amPlus) {
                 priceCells = $(row)
                     .next()
                     .find("td:contains('$')");
@@ -1210,6 +1208,10 @@
                 return aircraft;
             }
         }
+    }
+
+    async function isAMPlus() {
+        return $($.parseHTML(await $.get("/amplus"))).find(".nbDayAmPlus").length > 0;
     }
     // ========================================================
 
