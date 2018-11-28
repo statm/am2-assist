@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AM2 Assist
 // @namespace    http://tampermonkey.net/
-// @version      0.7.3
+// @version      0.7.4
 // @description  Airlines Manager 2 Assist
 // @author       statm
 // @contributor  henryzhou
@@ -16,7 +16,7 @@
 (function() {
     "use strict";
 
-    const VERSION = "0.7.3";
+    const VERSION = "0.7.4";
     const ROOT_URL = /http(s)?:\/\/www.airlines-manager.com\//;
     const DAYS_SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     const AJAX_COOLDOWN = 500;
@@ -806,7 +806,7 @@
     /* AUDIT LIST ENHANCEMENT */
     define(["marketing/internalaudit/linelist(\\?.*)?"], function() {
         $("td.reliability").next().each(function() {
-            const pricingUrl = $(this).find("a").attr("href").replace("internalAudit", "pricing");
+            const pricingUrl = $(this).find("a").attr("href").replace("internalaudit", "pricing");
             
             const pricingLink = $(`<a href="${pricingUrl}">
                                     <img class="auditIcon" src="/images/icons30/marketing_globalPricing.png?v1.6.11" width="20" height="20" title="Pricing details">
