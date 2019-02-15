@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AM2 Assist
 // @namespace    http://tampermonkey.net/
-// @version      0.7.4
+// @version      0.7.5
 // @description  Airlines Manager 2 Assist
 // @author       statm
 // @contributor  henryzhou
@@ -16,7 +16,7 @@
 (function() {
     "use strict";
 
-    const VERSION = "0.7.4";
+    const VERSION = "0.7.5";
     const ROOT_URL = /http(s)?:\/\/www.airlines-manager.com\//;
     const DAYS_SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     const AJAX_COOLDOWN = 500;
@@ -1122,9 +1122,14 @@
         const workshopInfo = [];
         let id = start;
         while (id <= end) {
-            const page = $($.parseHTML(await $.get(`/shop/enablebonus/${id}`)));
+            let pageStr = "";
+            try {
+                pageStr = await $.get(`/shop/enablebonus/${id}`);
+            } catch (e) {
+            }
+            const page = $($.parseHTML(pageStr));
             let popUp = page.find(".popupMiddle");
-            if (popUp.length > 0 && !popUp.text().includes("An error") && popUp.find("p").length > 1){
+            if (popUp.length > 0 && !popUp.text().includes("An error") && popUp.find("p").length > 1) {
                 const tcPrice = getIntFromString(popUp.find("p")[0].innerText.trim());
                 const itemName = popUp.find("p")[1].innerText.trim();
                 let tcRate = 0;
