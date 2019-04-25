@@ -1,0 +1,23 @@
+{
+  "name": "am2-assist",
+  "description": "Airlines Manager 2 Assist",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/statm/am2-assist.git"
+  },
+  "author": "statm",
+  "devDependencies": {
+    "@types/jquery": "^3.3.29",
+    "@types/jqueryui": "^1.12.7",
+    "@types/tampermonkey": "^4.0.0",
+    "ts-loader": "^5.4.3",
+    "typescript": "^3.4.4",
+    "webpack": "^4.0.0",
+    "webpack-cli": "^3.3.1",
+    "webpack-userscript": "^2.3.0"
+  }
+}
