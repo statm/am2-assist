@@ -4,11 +4,11 @@ import { AJAX_COOLDOWN } from '../constants';
 export async function loadPriceData() {
     const routePriceMap: any = {};
 
-    const auditPage = $($.parseHTML(await $.get("/marketing/internalaudit/linelist")));
+    const auditPage = $($.parseHTML(await $.get('/marketing/internalaudit/linelist')));
     const amPlus = await isAMPlus();
 
-    for (const row of auditPage.find("table.internalAuditTable tbody tr[id]").toArray()) {
-        const routeId = $(row).attr("id")!;
+    for (const row of auditPage.find('table.internalAuditTable tbody tr[id]').toArray()) {
+        const routeId = $(row).attr('id')!;
         let priceCells;
 
         if (amPlus) {

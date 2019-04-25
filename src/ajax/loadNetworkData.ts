@@ -32,7 +32,7 @@ export function loadNetworkData(): Promise<NetworkData> {
             for (const aircraft of aircraftList) {
                 for (let i = 0; i < aircraft.planningList.length; ++i) {
                     const trip = aircraft.planningList[i];
-                    const remaining = routeMap[trip.lineId].remaining[(trip.takeOffTime / 86400) | 0];
+                    const remaining = routeMap[trip.lineId].remaining[Math.floor(trip.takeOffTime / 86400)];
                     remaining.eco -= aircraft.seatsEco * 2;
                     remaining.bus -= aircraft.seatsBus * 2;
                     remaining.first -= aircraft.seatsFirst * 2;
@@ -45,7 +45,7 @@ export function loadNetworkData(): Promise<NetworkData> {
             const flightParameters = JSON.parse(
                 networkIFrame
                     .contents()
-                    .find("#jsonAirlineFlightParameters")
+                    .find('#jsonAirlineFlightParameters')
                     .text()
             );
 
@@ -57,6 +57,6 @@ export function loadNetworkData(): Promise<NetworkData> {
                 flightParameters
             });
         });
-        $("html").append(networkIFrame);
+        $('html').append(networkIFrame);
     });
 }

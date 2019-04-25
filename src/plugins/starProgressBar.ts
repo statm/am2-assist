@@ -3,10 +3,10 @@ import { STAR_TABLE } from '../data/starTable';
 import { loadStructuralProfit } from '../ajax/loadStructuralProfit';
 
 export const starProgressBar: Plugin = {
-    name: "STAR PROGRESS BAR",
-    urlPatterns: ["home.*"],
+    name: 'STAR PROGRESS BAR',
+    urlPatterns: ['home.*'],
     action: async function () {
-        const companyName = $(".companyNameBox").html();
+        const companyName = $('.companyNameBox').html();
 
         const spValue = await loadStructuralProfit(companyName);
         if (!spValue || spValue >= STAR_TABLE[STAR_TABLE.length - 1]) {
@@ -23,13 +23,13 @@ export const starProgressBar: Plugin = {
             }
         }
 
-        $(".companyStars").append(
+        $('.companyStars').append(
             "<div id='spProgress' style='display:flex;margin-top:4px;align-items:center;'><div id='spProgressBar' style='width:75px;'/><div id='spProgressText' style='margin-left:5px'/></div>"
         );
-        $("#spProgressBar").progressbar({
+        $('#spProgressBar').progressbar({
             value: spProgress
         });
-        $("#spProgressText").html(`${spProgress.toFixed(1)}%`);
+        $('#spProgressText').html(`${spProgress.toFixed(1)}%`);
 
         const spTooltipText = [
             `Current SP: $${spValue.toLocaleString()}`,
@@ -38,11 +38,11 @@ export const starProgressBar: Plugin = {
         if (stars > 0) {
             spTooltipText.unshift(`Last star: $${STAR_TABLE[stars - 1].toLocaleString()}`);
         }
-        $("#spProgress")
-            .attr("title", spTooltipText.join("\n"))
-            .tooltip({ content: spTooltipText.join("<br/>") });
+        $('#spProgress')
+            .attr('title', spTooltipText.join('\n'))
+            .tooltip({ content: spTooltipText.join('<br/>') });
 
-        $("#spProgressBar").attr("class", "progressbar");
-        $("#spProgressBar > div").attr("class", "progressbarValue");
+        $('#spProgressBar').attr('class', 'progressbar');
+        $('#spProgressBar > div').attr('class', 'progressbarValue');
     }
-}
+};

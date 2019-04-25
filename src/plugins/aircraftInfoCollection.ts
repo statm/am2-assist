@@ -5,22 +5,22 @@ import { assert } from '../utils';
 import { AircraftInfo } from '../typings';
 
 export const aircraftInfoCollection: Plugin = {
-    name: "AIRCRAFT INFO COLLECTION (CTRL+SHIFT+/)",
-    urlPatterns: [".*"],
+    name: 'AIRCRAFT INFO COLLECTION (CTRL+SHIFT+/)',
+    urlPatterns: ['.*'],
     action: function () {
-        window.addEventListener("keyup", async function (event) {
+        window.addEventListener('keyup', async function (event) {
             // Ctrl + Shift + /
-            if (event.key == "?" && !event.altKey && event.ctrlKey && event.shiftKey) {
+            if (event.key == '?' && !event.altKey && event.ctrlKey && event.shiftKey) {
                 const aircraftInfo = await loadAircraftInfo();
 
                 // Copy
-                let output = "";
+                let output = '';
                 for (const aircraft of aircraftInfo) {
-                    output += JSON.stringify(aircraft, ["id", "name", "category", "speed", "range", "price", "seats", "payload"]) + ",\n";
+                    output += JSON.stringify(aircraft, ['id', 'name', 'category', 'speed', 'range', 'price', 'seats', 'payload']) + ',\n';
                 }
                 output = `[\n${output}]`;
                 GM_setClipboard(output);
-                console.log("Aircraft list copied to clipboard");
+                console.log('Aircraft list copied to clipboard');
 
                 // Verification
                 assert(aircraftInfo.length == AIRCRAFT_TABLE.length);
@@ -39,4 +39,4 @@ export const aircraftInfoCollection: Plugin = {
             }
         });
     }
-}
+};

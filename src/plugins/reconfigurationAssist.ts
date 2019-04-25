@@ -1,11 +1,11 @@
 import { Plugin } from '../plugin';
 import { PAGE_URL, DAYS_SHORT } from '../constants';
 import { loadNetworkData } from '../ajax/loadNetworkData';
-import { getIntFromElement, getFlightDuration, assert, getIntFromString } from '../utils';
+import { getIntFromElement, getFlightDuration, getIntFromString } from '../utils';
 
 export const reconfigurationAssist: Plugin = {
-    name: "RECONFIGURATION ASSIST",
-    urlPatterns: ["aircraft/show/[0-9]+/reconfigure", "aircraft/buy/new/[0-9]+/[^/]+/.*"],
+    name: 'RECONFIGURATION ASSIST',
+    urlPatterns: ['aircraft/show/[0-9]+/reconfigure', 'aircraft/buy/new/[0-9]+/[^/]+/.*'],
     action: async function () {
         $(`<style type='text/css'>
             #reconfigBox { float: right; width: 225px; height: 400px; overflow-y: auto; border: 1px solid #aaa; border-radius: 4px; margin-right: 2px; background-color: #fff }
@@ -21,14 +21,20 @@ export const reconfigurationAssist: Plugin = {
             .pax-box { width: 36px; font-weight: bold }
             .num-pos { color: #8ecb47 }
             .num-neg { color: #da4e28 }
-        </style>`).appendTo("head");
+        </style>`).appendTo('head');
 
-        const reconfigBox = $(`<div id="reconfigBox"><div style="line-height:290px;text-align:center"><img src="//goo.gl/aFrC17" width="20"><span style="vertical-align:middle;margin-left:3px;color:#585d69">Loading...</span></div></div>`);
+        const reconfigBox =$(
+            `<div id="reconfigBox">
+                <div style="line-height:290px;text-align:center">
+                    <img src="//goo.gl/aFrC17" width="20">
+                    <span style="vertical-align:middle;margin-left:3px;color:#585d69">Loading...</span>
+                </div>
+            </div>`);
         const ownAircraftMatch = PAGE_URL.match(/aircraft\/show\/([0-9]+)\/reconfigure/);
         if (!ownAircraftMatch) {
-            reconfigBox.css({ height: "300px", "margin-top": "70px" });
+            reconfigBox.css({ height: '300px', 'margin-top': '70px' });
         }
-        $("#box2").after(reconfigBox);
+        $('#box2').after(reconfigBox);
 
         const networkData = await loadNetworkData();
 
@@ -43,13 +49,13 @@ export const reconfigurationAssist: Plugin = {
                 currentAircraftSpeed = networkData.aircraftMap[currentAircraftId].speed;
                 currentAircraftRange = networkData.aircraftMap[currentAircraftId].range;
                 currentAircraftCategory = networkData.aircraftMap[currentAircraftId].category;
-                currentAircraftLocation = $(".aircraftMainInfo span:eq(2)").text().replace(" /", "");
+                currentAircraftLocation = $('.aircraftMainInfo span:eq(2)').text().replace(' /', '');
             } else {
-                const aircraftPurchaseBox = $(".aircraftPurchaseBox");
+                const aircraftPurchaseBox = $('.aircraftPurchaseBox');
                 currentAircraftSpeed = getIntFromElement(aircraftPurchaseBox.find("li:contains('Speed') b"));
                 currentAircraftRange = getIntFromElement(aircraftPurchaseBox.find("li:contains('Range') b"));
-                currentAircraftCategory = getIntFromString(aircraftPurchaseBox.find(".title img").attr("alt")!.replace("cat", ""));
-                currentAircraftLocation = $("#aircraft_hub option:selected").text().split(" - ")[0];
+                currentAircraftCategory = getIntFromString(aircraftPurchaseBox.find('.title img').attr('alt')!.replace('cat', ''));
+                currentAircraftLocation = $('#aircraft_hub option:selected').text().split(' - ')[0];
             }
 
             const possibleRoutes = networkData.routeList
@@ -62,7 +68,7 @@ export const reconfigurationAssist: Plugin = {
             }
             possibleRoutes.forEach(route => {
                 const flightTime = getFlightDuration(route.distance, currentAircraftSpeed, networkData.flightParameters);
-                const flightTimeH = (flightTime / 60) | 0;
+                const flightTimeH = Math.floor(flightTime / 60);
                 const flightTimeM = flightTime % 60;
 
                 const titleBox = $(
@@ -94,7 +100,7 @@ export const reconfigurationAssist: Plugin = {
                     }
                 }
 
-                const getPaxTextClass = (pax: number) => (pax >= 0 ? "num-pos" : "num-neg");
+                const getPaxTextClass = (pax: number) => (pax >= 0 ? 'num-pos' : 'num-neg');
 
                 paxGroup.forEach(paxSeg => {
                     const dayText =
@@ -118,6 +124,6 @@ export const reconfigurationAssist: Plugin = {
         };
 
         displayRelevantRoutes();
-        $("#aircraft_hub").change(displayRelevantRoutes);
+        $('#aircraft_hub').change(displayRelevantRoutes);
     }
-}
+};

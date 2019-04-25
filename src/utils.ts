@@ -39,7 +39,7 @@ export function sleep(msec: number) {
 }
 
 export function getIntFromString(str: string) {
-    return parseInt(str.replace(/[^0-9]/g, ""));
+    return parseInt(str.replace(/[^0-9]/g, ''), 10);
 }
 
 export function getIntFromElement(element: JQuery<JQuery.Node[]> | JQuery<HTMLElement>) {
@@ -63,5 +63,5 @@ export function getAircraftInfo(name: string) {
 }
 
 export async function isAMPlus() {
-    return $($.parseHTML(await $.get("/amplus"))).find(".nbDayAmPlus").length > 0;
+    return $($.parseHTML(await $.get('/amplus'))).find('.nbDayAmPlus').length > 0;
 }

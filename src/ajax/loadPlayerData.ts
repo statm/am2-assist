@@ -20,31 +20,31 @@ export async function loadPlayerData() {
             })
         );
         return copyWithProperties(aircraft, [
-            "id",
-            "name",
-            "aircraftListName",
-            "category",
-            "range",
-            "speed",
-            "isRental",
-            "isCargo",
-            "seatsEco",
-            "seatsBus",
-            "seatsFirst",
-            "payloadUsed"
+            'id',
+            'name',
+            'aircraftListName',
+            'category',
+            'range',
+            'speed',
+            'isRental',
+            'isCargo',
+            'seatsEco',
+            'seatsBus',
+            'seatsFirst',
+            'payloadUsed'
         ]);
     });
 
     const routeList = networkData.routeList.map(function (route: any) {
         const result = copyWithProperties(route, [
-            "id",
-            "name",
-            "distance",
-            "category",
-            "paxAttEco",
-            "paxAttBus",
-            "paxAttFirst",
-            "paxAttCargo"
+            'id',
+            'name',
+            'distance',
+            'category',
+            'paxAttEco',
+            'paxAttBus',
+            'paxAttFirst',
+            'paxAttCargo'
         ]);
         result.price = priceData[route.id];
         return result;

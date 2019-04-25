@@ -5,7 +5,7 @@ import { loadSimulationResult } from '../ajax/loadSimulationResult';
 function duperSimMain() {
     const SPINNER = `<img src="//goo.gl/aFrC17" width="20">`;
 
-    const simulationCostBox = $(".demandSimulation > p:first-of-type");
+    const simulationCostBox = $('.demandSimulation > p:first-of-type');
     if (simulationCostBox.length != 1) {
         return;
     }
@@ -25,7 +25,7 @@ function duperSimMain() {
         .num-pos { color: #8ecb47 }
         .num-neg { color: #da4e28 }
        </style>
-    `).appendTo("head");
+    `).appendTo('head');
 
     $(`
         <hr class="myGreyhr">
@@ -39,10 +39,10 @@ function duperSimMain() {
             </div>
             <div id="duperSimErrorBox"><strong>Error: </strong><span id="duperSimErrorMessage"></span></div>
         </div>
-    `).appendTo(".secretaryBox");
+    `).appendTo('.secretaryBox');
 
     const resetUI = function () {
-        $("#duperSimTable").remove();
+        $('#duperSimTable').remove();
         $(`
             <table id="duperSimTable">
                 <thead>
@@ -74,19 +74,19 @@ function duperSimMain() {
                     <tr id="row-best-turnover"><td>Best Turnover</td></tr>
                 </tbody>
             </table>
-        `).appendTo("#duperSimBox");
+        `).appendTo('#duperSimBox');
 
-        $("#duperSimTable thead, #duperSimTable tbody tr, #duperSimErrorBox").hide();
+        $('#duperSimTable thead, #duperSimTable tbody tr, #duperSimErrorBox').hide();
     };
     resetUI();
 
     const showError = function (message: string) {
-        $("#duperSimErrorMessage").text(message);
-        $("#duperSimErrorBox").show();
-        $("#duperSimErrorBox")[0].scrollIntoView({ behavior: "smooth" });
+        $('#duperSimErrorMessage').text(message);
+        $('#duperSimErrorBox').show();
+        $('#duperSimErrorBox')[0].scrollIntoView({ behavior: 'smooth' });
     };
 
-    $("#duperSimButton").click(async function () {
+    $('#duperSimButton').click(async function () {
         const STEP_RATIO = 0.12;
         const PAX_EPSILON = 3;
         const COOLDOWN = 5000;
@@ -94,10 +94,10 @@ function duperSimMain() {
         const [ECO, BUS, FIRST, CARGO] = [0, 1, 2, 3];
         const [L2, L1, R1, R2] = [0, 1, 2, 3];
 
-        const lineId: number = $("input#lineId").val() as number;
+        const lineId: number = $('input#lineId').val() as number;
 
         if ($(".box1 div.price:contains('Ideal')").length == 0) {
-            showError("You must perform an audit before DUPER Sim.");
+            showError('You must perform an audit before DUPER Sim.');
             return;
         }
 
@@ -107,7 +107,7 @@ function duperSimMain() {
         const demands: number[] = [];
         const supplies: number[] = [];
 
-        const step = prices.map(price => (STEP_RATIO * price) | 0);
+        const step = prices.map(price => Math.floor(STEP_RATIO * price));
         const simPrices = [
             prices.map((price, index) => price - 2 * step[index]),
             prices.map((price, index) => price - step[index]),
@@ -121,11 +121,11 @@ function duperSimMain() {
 
         // iteration 0
         for (const seat of [ECO, BUS, FIRST]) {
-            $("#row-starting-price").append(`<td colspan="2">${prices[seat].toLocaleString()} $</td>`);
-            $("#row-pax-1").append(`<td id="cell-pax-1-${seat}" colspan="2">${SPINNER}</td>`);
+            $('#row-starting-price').append(`<td colspan="2">${prices[seat].toLocaleString()} $</td>`);
+            $('#row-pax-1').append(`<td id="cell-pax-1-${seat}" colspan="2">${SPINNER}</td>`);
         }
-        $("#duperSimTable thead, #row-starting-price, #row-arrow-1, #row-pax-1").show(ANIMATION_SPEED);
-        $("#row-pax-1")[0].scrollIntoView({ behavior: "smooth" });
+        $('#duperSimTable thead, #row-starting-price, #row-arrow-1, #row-pax-1').show(ANIMATION_SPEED);
+        $('#row-pax-1')[0].scrollIntoView({ behavior: 'smooth' });
         await sleep(ANIMATION_SPEED);
 
         const initialSimResult = await loadSimulationResult(lineId, prices);
@@ -134,7 +134,7 @@ function duperSimMain() {
             supplies[seat] = demands[seat] - initialSimResult[seat].paxLeft;
         }
 
-        const getPaxTextClass = (pax: number, seat: number) => (pax - supplies[seat] >= 0 ? "num-pos" : "num-neg");
+        const getPaxTextClass = (pax: number, seat: number) => (pax - supplies[seat] >= 0 ? 'num-pos' : 'num-neg');
 
         for (const seat of [ECO, BUS, FIRST]) {
             $(`#cell-pax-1-${seat}`).html(
@@ -142,19 +142,19 @@ function duperSimMain() {
                     ${initialSimResult[seat].pax} Pax
                 </span>`
             );
-            $("#row-supply").append(`<td colspan="2">${supplies[seat]} Pax</td>`);
-            $("#row-price-step").append(`<td colspan="2">${step[seat].toLocaleString()} $</td>`);
+            $('#row-supply').append(`<td colspan="2">${supplies[seat]} Pax</td>`);
+            $('#row-price-step').append(`<td colspan="2">${step[seat].toLocaleString()} $</td>`);
         }
-        $("#row-supply, #row-price-step, #row-near-samples, #row-arrow-2, #row-pax-2").show(ANIMATION_SPEED);
-        $("#row-pax-2")[0].scrollIntoView({ behavior: "smooth" });
+        $('#row-supply, #row-price-step, #row-near-samples, #row-arrow-2, #row-pax-2').show(ANIMATION_SPEED);
+        $('#row-pax-2')[0].scrollIntoView({ behavior: 'smooth' });
 
         // iteration 1
         for (const seat of [ECO, BUS, FIRST]) {
-            $("#row-near-samples").append(`
+            $('#row-near-samples').append(`
                 <td>${simPrices[L1][seat].toLocaleString()} $</td>
                 <td>${simPrices[R1][seat].toLocaleString()} $</td>
             `);
-            $("#row-pax-2").append(`
+            $('#row-pax-2').append(`
                 <td id="cell-pax-2-${seat}-l">${SPINNER}</td>
                 <td id="cell-pax-2-${seat}-r">${SPINNER}</td>
             `);
@@ -178,25 +178,25 @@ function duperSimMain() {
 
         for (const seat of [ECO, BUS, FIRST]) {
             if (Math.abs(sim[L1][seat].pax + sim[R1][seat].pax - 2 * demands[seat]) < PAX_EPSILON) {
-                showError("Audit info is too outdated.");
+                showError('Audit info is too outdated.');
                 return;
             }
 
             if (sim[L1][seat].pax <= 0 || sim[R1][seat].pax <= 0) {
-                showError("Zero pax encountered.");
+                showError('Zero pax encountered.');
                 return;
             }
         }
 
         // iteration 2
-        $("#row-far-samples, #row-arrow-3, #row-pax-3").show(ANIMATION_SPEED);
-        $("#row-pax-3")[0].scrollIntoView({ behavior: "smooth" });
+        $('#row-far-samples, #row-arrow-3, #row-pax-3').show(ANIMATION_SPEED);
+        $('#row-pax-3')[0].scrollIntoView({ behavior: 'smooth' });
         for (const seat of [ECO, BUS, FIRST]) {
-            $("#row-far-samples").append(`
+            $('#row-far-samples').append(`
                 <td>${simPrices[L2][seat].toLocaleString()} $</td>
                 <td>${simPrices[R2][seat].toLocaleString()} $</td>
             `);
-            $("#row-pax-3").append(`
+            $('#row-pax-3').append(`
                 <td id="cell-pax-3-${seat}-l">${SPINNER}</td>
                 <td id="cell-pax-3-${seat}-r">${SPINNER}</td>
             `);
@@ -220,7 +220,7 @@ function duperSimMain() {
 
         for (const seat of [ECO, BUS, FIRST]) {
             if (sim[L2][seat].pax <= 0 || sim[R2][seat].pax <= 0) {
-                showError("Zero pax encountered.");
+                showError('Zero pax encountered.');
                 return;
             }
         }
@@ -258,53 +258,53 @@ function duperSimMain() {
         }
 
         for (const seat of [ECO, BUS, FIRST]) {
-            $("#row-under-equation").append(
+            $('#row-under-equation').append(
                 `<td colspan="2" style="font-style:italic">
                     y = ${solution[seat].a1.toFixed(4)}x + ${solution[seat].b1.toFixed(4)}
                 </td>`
             );
-            $("#row-over-equation").append(
+            $('#row-over-equation').append(
                 `<td colspan="2" style="font-style:italic">
                     y = ${solution[seat].a2.toFixed(4)}x + ${solution[seat].b2.toFixed(4)}
                 </td>`
             );
-            $("#row-ideal-price").append(
+            $('#row-ideal-price').append(
                 `<td colspan="2">${Math.round(solution[seat].idealPrice).toLocaleString()} $</td>`
             );
-            $("#row-pax-4").append(
+            $('#row-pax-4').append(
                 `<td colspan="2"><span class="${getPaxTextClass(
                     Math.round(solution[seat].idealPax),
                     seat
                 )}">${Math.round(solution[seat].idealPax)} Pax</span></td>`
             );
-            $("#row-ideal-turnover").append(
+            $('#row-ideal-turnover').append(
                 `<td colspan="2">${solution[seat].idealTurnover.toLocaleString()} $</td>`
             );
-            $("#row-best-price").append(
+            $('#row-best-price').append(
                 `<td colspan="2">${Math.round(solution[seat].bestPrice).toLocaleString()} $</td>`
             );
-            $("#row-pax-5").append(
+            $('#row-pax-5').append(
                 `<td colspan="2"><span class="${getPaxTextClass(
                     Math.round(solution[seat].bestPax),
                     seat
                 )}">${Math.round(solution[seat].bestPax)} Pax</span></td>`
             );
-            $("#row-best-turnover").append(
+            $('#row-best-turnover').append(
                 `<td colspan="2">${solution[seat].bestTurnover.toLocaleString()} $</td>`
             );
         }
 
         $(
-            "#row-under-equation, #row-over-equation, #row-ideal-price, #row-arrow-4, #row-pax-4, #row-ideal-turnover, #row-best-price, #row-arrow-5, #row-pax-5, #row-best-turnover"
+            '#row-under-equation, #row-over-equation, #row-ideal-price, #row-arrow-4, #row-pax-4, #row-ideal-turnover, #row-best-price, #row-arrow-5, #row-pax-5, #row-best-turnover'
         ).show(ANIMATION_SPEED);
-        $("#row-best-turnover")[0].scrollIntoView({ behavior: "smooth" });
+        $('#row-best-turnover')[0].scrollIntoView({ behavior: 'smooth' });
 
         // debugger;
     });
 }
 
 export const duperSim: Plugin = {
-    name: "DUPERSIM",
-    urlPatterns: ["marketing/pricing/[0-9]+"],
+    name: 'DUPERSIM',
+    urlPatterns: ['marketing/pricing/[0-9]+'],
     action: duperSimMain
-}
+};

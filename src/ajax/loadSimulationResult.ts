@@ -2,7 +2,7 @@ import { getIntFromString, assert } from '../utils';
 
 export function loadSimulationResult(lineId: number, prices: number[]) {
     const [ECO, BUS, FIRST, CARGO] = [0, 1, 2, 3];
-    
+
     assert(prices.length == 4);
     return $.post(`/marketing/pricing/priceSimulation/${lineId}`, {
         priceEco: prices[0],

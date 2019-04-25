@@ -61,7 +61,7 @@ export enum SeatClass {
     BUS,
     FIRST,
     CARGO
-};
+}
 
 export type FlightParameters = {
     boardingTime: number,

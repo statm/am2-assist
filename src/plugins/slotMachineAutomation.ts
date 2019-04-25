@@ -2,22 +2,22 @@ import { Plugin } from '../plugin';
 import { AJAX_COOLDOWN } from '../constants';
 
 export const slotMachineAutomation: Plugin = {
-    name: "SLOT MACHINE AUTOMATION",
-    urlPatterns: ["company/cockpitasous"],
+    name: 'SLOT MACHINE AUTOMATION',
+    urlPatterns: ['company/cockpitasous'],
     action: function () {
         let playing = false;
         let gameCount = 0;
-        let logText = "";
+        let logText = '';
         const harvest: any = {};
-        const harvestNames = [["d", "$"], ["rd", "R$"], ["t", "Tickets"], ["tr", "TC"]];
+        const harvestNames = [['d', '$'], ['rd', 'R$'], ['t', 'Tickets'], ['tr', 'TC']];
 
-        $("#gameAlsoOnMobile").remove();
+        $('#gameAlsoOnMobile').remove();
 
         const logArea = $("<textarea style='width:710px;height:100px;margin:25px 15px 0px 15px' readonly />");
-        $(".cockpitASousContent").append(logArea);
+        $('.cockpitASousContent').append(logArea);
 
-        $("button#playForOneTicket")
-            .unbind("click")
+        $('button#playForOneTicket')
+            .unbind('click')
             .click(function () {
                 if (!playing) {
                     play();
@@ -33,7 +33,7 @@ export const slotMachineAutomation: Plugin = {
             playing = true;
             ++gameCount;
             log(`Game ${gameCount}...`);
-            $.get("cockpitasous/play", function (resp) {
+            $.get('cockpitasous/play', function (resp) {
                 const data = $.parseJSON(resp);
 
                 if (data.errorMsg) {
@@ -44,10 +44,10 @@ export const slotMachineAutomation: Plugin = {
                 }
 
                 if (data.gain) {
-                    if (data.gain.gainLabel.endsWith(" R$")) {
-                        data.gain.gainLabel = "+R$ " + data.gain.gainLabel.substr(1, data.gain.gainLabel.length - 3);
-                    } else if (data.gain.gainLabel.endsWith(" $")) {
-                        data.gain.gainLabel = "+$ " + data.gain.gainLabel.substr(1, data.gain.gainLabel.length - 2);
+                    if (data.gain.gainLabel.endsWith(' R$')) {
+                        data.gain.gainLabel = '+R$ ' + data.gain.gainLabel.substr(1, data.gain.gainLabel.length - 3);
+                    } else if (data.gain.gainLabel.endsWith(' $')) {
+                        data.gain.gainLabel = '+$ ' + data.gain.gainLabel.substr(1, data.gain.gainLabel.length - 2);
                     }
                     log(`${data.gain.gainLabel}\n`);
 
@@ -56,7 +56,7 @@ export const slotMachineAutomation: Plugin = {
                     }
                     harvest[data.gain.gainType] += data.gain.gainAmount;
                 } else {
-                    log("nothing\n");
+                    log('nothing\n');
                 }
 
                 if (!data.isAllowToPlay || data.nbOfTickets == 0) {
@@ -75,4 +75,4 @@ export const slotMachineAutomation: Plugin = {
             });
         }
     }
-}
+};
