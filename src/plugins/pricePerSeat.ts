@@ -8,14 +8,14 @@ export const pricePerSeat: Plugin = {
         const isRental = pattern.startsWith('aircraft/buy/rental');
         $('.aircraftPurchaseBox').each(function() {
             const paxBox = $(this).find("li:contains('Seats') b");
-            if (paxBox.length == 0) {
+            if (paxBox.length === 0) {
                 // cargo, pass through
                 return;
             }
-            assert(paxBox.length == 1);
+            assert(paxBox.length === 1);
 
             const numPax = getIntFromElement(paxBox);
-            if (numPax == 0) {
+            if (numPax === 0) {
                 // cargo, pass through
                 return;
             }
@@ -29,7 +29,7 @@ export const pricePerSeat: Plugin = {
                 .css({ 'max-width': '180px' });
 
             const priceBox = $(this).find("strong.discountTotalPrice, span:contains(' / Week') b");
-            assert(priceBox.length == 1);
+            assert(priceBox.length === 1);
 
             const aircraftQuantitySelect = $(this).find('select.quantitySelect');
 
@@ -37,7 +37,7 @@ export const pricePerSeat: Plugin = {
             priceBox.parent().append(pricePerPaxBox);
 
             const updatePricePerPax = function() {
-                const aircraftQuantity: number = aircraftQuantitySelect.length == 1 ? (aircraftQuantitySelect.val() as number) : 1;
+                const aircraftQuantity: number = aircraftQuantitySelect.length === 1 ? (aircraftQuantitySelect.val() as number) : 1;
                 const price = getIntFromElement(priceBox) / aircraftQuantity;
                 const pricePerSeatText = (price / numPax).toLocaleString(undefined, { maximumFractionDigits: 0 });
                 pricePerPaxBox.html(

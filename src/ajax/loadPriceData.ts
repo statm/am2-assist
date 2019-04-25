@@ -22,7 +22,7 @@ export async function loadPriceData() {
             await sleep(AJAX_COOLDOWN);
         }
 
-        assert(priceCells.length == 4);
+        assert(priceCells.length === 4);
         routePriceMap[routeId] = {
             eco: getIntFromElement(priceCells.eq(0)),
             bus: getIntFromElement(priceCells.eq(1)),

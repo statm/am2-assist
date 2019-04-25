@@ -6,7 +6,7 @@ function duperSimMain() {
     const SPINNER = `<img src="//goo.gl/aFrC17" width="20">`;
 
     const simulationCostBox = $('.demandSimulation > p:first-of-type');
-    if (simulationCostBox.length != 1) {
+    if (simulationCostBox.length !== 1) {
         return;
     }
     const simulationCost = getIntFromElement(simulationCostBox);
@@ -96,7 +96,7 @@ function duperSimMain() {
 
         const lineId: number = $('input#lineId').val() as number;
 
-        if ($(".box1 div.price:contains('Ideal')").length == 0) {
+        if ($(".box1 div.price:contains('Ideal')").length === 0) {
             showError('You must perform an audit before DUPER Sim.');
             return;
         }

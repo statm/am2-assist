@@ -3,7 +3,7 @@ import { getIntFromString, assert } from '../utils';
 export function loadSimulationResult(lineId: number, prices: number[]) {
     const [ECO, BUS, FIRST, CARGO] = [0, 1, 2, 3];
 
-    assert(prices.length == 4);
+    assert(prices.length === 4);
     return $.post(`/marketing/pricing/priceSimulation/${lineId}`, {
         priceEco: prices[0],
         priceBus: prices[1],
@@ -11,7 +11,7 @@ export function loadSimulationResult(lineId: number, prices: number[]) {
         priceCargo: prices[3]
     }).then(function (result) {
         const data = JSON.parse(result);
-        if (data.errorCode != 0) {
+        if (data.errorCode !== 0) {
             throw new Error(data.notifyMessage);
         }
 

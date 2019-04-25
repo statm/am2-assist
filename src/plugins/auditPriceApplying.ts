@@ -5,12 +5,12 @@ export const auditPriceApplying: Plugin = {
     name: 'AUDIT PRICE APPLYING',
     urlPatterns: ['marketing/pricing/[0-9]+(\\?.*)?'],
     action: function() {
-        if ($('.box1').length == 0) {
+        if ($('.box1').length === 0) {
             // No audit result
             return;
         }
 
-        assert($('a.marketing_PriceLink').length == 1);
+        assert($('a.marketing_PriceLink').length === 1);
         $(`<a id="applyIdealPricesButton" class="gradientButton gradientButtonYellow" style="float:right;cursor:pointer;user-select:none">
             <img src="//goo.gl/Tpw577" width="28" height="28">
             <span>Apply ideal prices</span>
@@ -24,7 +24,7 @@ export const auditPriceApplying: Plugin = {
                 }
             }
 
-            assert($('.box1 .price b').length == 4);
+            assert($('.box1 .price b').length === 4);
             $('#line_priceEco').val(getIntFromString($('.box1 .price b')[0].innerText));
             $('#line_priceBus').val(getIntFromString($('.box1 .price b')[1].innerText));
             $('#line_priceFirst').val(getIntFromString($('.box1 .price b')[2].innerText));

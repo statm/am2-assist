@@ -56,7 +56,7 @@ export function copyWithProperties(obj: any, props: string[]) {
 
 export function getAircraftInfo(name: string) {
     for (const aircraft of AIRCRAFT_TABLE) {
-        if (aircraft.name == name) {
+        if (aircraft.name === name) {
             return aircraft;
         }
     }

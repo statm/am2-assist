@@ -63,7 +63,7 @@ export const reconfigurationAssist: Plugin = {
                 .sort((r1, r2) => r2.distance - r1.distance);
 
             reconfigBox.empty();
-            if (possibleRoutes.length == 0) {
+            if (possibleRoutes.length === 0) {
                 reconfigBox.html(`<div style="line-height:290px;text-align:center"><span style="vertical-align:middle;margin-left:3px;color:#585d69">No routes available</span></div>`);
             }
             possibleRoutes.forEach(route => {
@@ -82,17 +82,17 @@ export const reconfigurationAssist: Plugin = {
                 const paxGroup = [];
                 for (let i = 0; i < route.remaining.length; ++i) {
                     const currentPax = route.remaining[i];
-                    if (paxGroup.length == 0) {
+                    if (paxGroup.length === 0) {
                         paxGroup.push({ days: [i], pax: currentPax });
                         continue;
                     }
 
                     const lastPax = paxGroup[paxGroup.length - 1];
                     if (
-                        currentPax.eco == lastPax.pax.eco &&
-                        currentPax.bus == lastPax.pax.bus &&
-                        currentPax.first == lastPax.pax.first &&
-                        currentPax.cargo == lastPax.pax.cargo
+                        currentPax.eco === lastPax.pax.eco &&
+                        currentPax.bus === lastPax.pax.bus &&
+                        currentPax.first === lastPax.pax.first &&
+                        currentPax.cargo === lastPax.pax.cargo
                     ) {
                         lastPax.days.push(i);
                     } else {
@@ -104,7 +104,7 @@ export const reconfigurationAssist: Plugin = {
 
                 paxGroup.forEach(paxSeg => {
                     const dayText =
-                        paxSeg.days.length == 1
+                        paxSeg.days.length === 1
                             ? `${DAYS_SHORT[paxSeg.days[0]]}`
                             : `${DAYS_SHORT[paxSeg.days[0]]}-${DAYS_SHORT[paxSeg.days[paxSeg.days.length - 1]]}`;
                     const paxData = paxSeg.pax;

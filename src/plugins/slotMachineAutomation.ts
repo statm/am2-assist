@@ -59,7 +59,7 @@ export const slotMachineAutomation: Plugin = {
                     log('nothing\n');
                 }
 
-                if (!data.isAllowToPlay || data.nbOfTickets == 0) {
+                if (!data.isAllowToPlay || data.nbOfTickets === 0) {
                     playing = false;
                     log(`================== Ended ==================\n`);
                     for (const harvestNamePair of harvestNames) {

@@ -8,7 +8,7 @@ export const workshopScan: Plugin = {
     action: function() {
         window.addEventListener('keyup', async function(event) {
             // Ctrl + Alt + /
-            if (event.key == '/' && event.altKey && event.ctrlKey && !event.shiftKey) {
+            if (event.key === '/' && event.altKey && event.ctrlKey && !event.shiftKey) {
                 const HIGHLIGHT_THRESHOLD = 9999;
 
                 const startStr = prompt('Begin ID');
