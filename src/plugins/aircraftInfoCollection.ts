@@ -19,7 +19,7 @@ export const aircraftInfoCollection: Plugin = {
                     output += JSON.stringify(aircraft, ['id', 'name', 'category', 'speed', 'range', 'price', 'seats', 'payload']) + ',\n';
                 }
                 output = `[\n${output}]`;
-                GM_setClipboard(output);
+                // GM_setClipboard(output);
                 console.log('Aircraft list copied to clipboard');
 
                 // Verification

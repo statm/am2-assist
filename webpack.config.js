@@ -6,15 +6,14 @@ const headers = {
   contributor: ['henryzhou', 'jiak94'],
   license: 'MIT',
   match: ['http://www.airlines-manager.com/*', 'https://www.airlines-manager.com/*'],
-  grant: 'GM_setClipboard',
   updateURL: 'https://github.com/statm/am2-assist/raw/master/AM2_Assist.user.js'
 }
 
 module.exports = {
-  mode: 'development',
+  mode: 'production',
   entry: './src/index.ts',
   output: {
-    path: path.resolve(__dirname, 'lib'),
+    path: path.resolve(__dirname, 'dist'),
     filename: 'AM2_Assist.user.js'
   },
   resolve: {

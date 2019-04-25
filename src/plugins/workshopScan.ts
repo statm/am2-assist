@@ -9,7 +9,7 @@ export const workshopScan: Plugin = {
         window.addEventListener('keyup', async function(event) {
             // Ctrl + Alt + /
             if (event.key == '/' && event.altKey && event.ctrlKey && !event.shiftKey) {
-                const HIGHLIGHT_THRESHOLD = 7.5;
+                const HIGHLIGHT_THRESHOLD = 9999;
 
                 const startStr = prompt('Begin ID');
                 if (!startStr) {
@@ -25,26 +25,18 @@ export const workshopScan: Plugin = {
                 let printOutput = '';
                 const formatArray = [];
 
-                // Copy
-                let copyOutput = '';
-                let copyOutputHighlights = '';
-
                 for (const item of workshopInfo) {
-                    const itemLine = `${item.id}|${item.tcPrice}|${item.itemName}|${item.tcRate}\n`;
-                    copyOutput += itemLine;
+                    const itemLine = `${item.id}|${item.tcPrice}|${item.itemName}|${item.tcRate}  =>  https://www.airlines-manager.com/shop/enablebonus/${item.id}\n`;
 
                     if (item.tcRate > HIGHLIGHT_THRESHOLD) {
                         printOutput += `%c${itemLine}%c`;
                         formatArray.push('color:red', 'color:none');
-                        copyOutputHighlights += itemLine;
                     } else {
                         printOutput += itemLine;
                     }
                 }
 
                 console.log.apply(this, [printOutput, ...formatArray]);
-                GM_setClipboard(`${copyOutput}\nHighlights:\n${copyOutputHighlights}`);
-                console.log('Workshop info copied to clipboard');
             }
         });
     }
