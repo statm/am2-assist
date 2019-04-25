@@ -7,7 +7,7 @@ module.exports = {
   devtool: 'inline-source-map',
   plugins: [],
   devServer: {
-    contentBase: ['./dist', './dev'],
+    contentBase: ['.', './dev'],
     hot: false,
     inline: false,
     headers: {
