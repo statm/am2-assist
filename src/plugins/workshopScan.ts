@@ -2,6 +2,8 @@ import { Plugin } from '../plugin';
 import { loadWorkshopInfo } from '../ajax/loadWorkshopInfo';
 import { getIntFromString } from '../utils';
 
+// TODO: auto claim
+
 export const workshopScan: Plugin = {
     name: 'WORKSHOP SCAN (CTRL+ALT+/)',
     urlPatterns: ['.*'],

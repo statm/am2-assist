@@ -1,6 +1,8 @@
 import { Plugin } from '../plugin';
 import { getIntFromElement, getAircraftInfo } from '../utils';
 
+// TODO: update item processing logic
+
 export const tcRateDisplay: Plugin = {
     name: 'TC RATE DISPLAY',
     urlPatterns: ['shop/workshop'],

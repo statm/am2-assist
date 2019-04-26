@@ -1,5 +1,7 @@
 import { Plugin } from '../plugin';
 
+// TODO: Fix styling
+
 export const unfoldAgenda: Plugin = {
     name: 'UNFOLD AGENDA',
     urlPatterns: ['home.*'],

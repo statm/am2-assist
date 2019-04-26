@@ -1,6 +1,8 @@
 import { Plugin } from '../plugin';
 import { assert, getIntFromElement } from '../utils';
 
+// TODO: bug after number box change
+
 export const pricePerSeat: Plugin = {
     name: 'PRICE PER SEAT',
     urlPatterns: ['aircraft/buy/rental/[^/]+', 'aircraft/buy/new/[0-9]+/[^/]+'],

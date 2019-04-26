@@ -1,6 +1,9 @@
 import { Plugin } from '../plugin';
 import { assert, getIntFromString } from '../utils';
 
+// TODO: Direct POST w/o click simulation
+// TODO: Batch applying
+
 export const auditPriceApplying: Plugin = {
     name: 'AUDIT PRICE APPLYING',
     urlPatterns: ['marketing/pricing/[0-9]+(\\?.*)?'],
