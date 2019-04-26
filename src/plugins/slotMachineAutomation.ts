@@ -8,7 +8,7 @@ export const slotMachineAutomation: Plugin = {
         let playing = false;
         let gameCount = 0;
         let logText = '';
-        const harvest: any = {};
+        const harvest: {[harvestType: string]: number} = {};
         const harvestNames = [['d', '$'], ['rd', 'R$'], ['t', 'Tickets'], ['tr', 'TC']];
 
         $('#gameAlsoOnMobile').remove();

@@ -1,23 +1,18 @@
 import { loadNetworkData } from './loadNetworkData';
 import { loadPriceData } from './loadPriceData';
 import { copyWithProperties } from '../utils';
+import { NetworkData, AircraftData, RouteData, PriceData, PlanData } from '../typings';
 
 export async function loadPlayerData() {
-    const networkData: any = await loadNetworkData();
-    const priceData: any = await loadPriceData();
+    const networkData: NetworkData = await loadNetworkData();
+    const priceData: { [routeId: number]: PriceData } = await loadPriceData();
 
-    const planningList: any = [];
+    const planningList: Array<PlanData> = [];
 
-    const aircraftList = networkData.aircraftList.map(function (aircraft: any) {
+    const aircraftList = networkData.aircraftList.map(function (aircraft: AircraftData) {
         $.merge(
             planningList,
-            aircraft.planningList.map((planning: any) => {
-                return {
-                    takeOffTime: planning.takeOffTime,
-                    routeId: planning.lineId,
-                    aircraftId: planning.aircraftId
-                };
-            })
+            aircraft.planningList
         );
         return copyWithProperties(aircraft, [
             'id',
@@ -35,7 +30,7 @@ export async function loadPlayerData() {
         ]);
     });
 
-    const routeList = networkData.routeList.map(function (route: any) {
+    const routeList = networkData.routeList.map(function (route: RouteData) {
         const result = copyWithProperties(route, [
             'id',
             'name',

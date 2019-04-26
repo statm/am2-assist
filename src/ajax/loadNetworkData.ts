@@ -7,6 +7,7 @@ export function loadNetworkData(): Promise<NetworkData> {
             "<iframe src='/network/planning' width='0' height='0'/>"
         );
         networkIFrame.on('load', async function () {
+            // tslint:disable-next-line:no-any
             const contentWindow: any = (networkIFrame[0] as HTMLIFrameElement).contentWindow;
             await waitUntil(() => contentWindow.hasAlreadyRegroupedData, 100, 50);
 

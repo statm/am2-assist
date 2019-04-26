@@ -12,7 +12,9 @@ export async function loadWorkshopInfo(start: number, end: number) {
         const page = $($.parseHTML(pageStr));
         const popUp = page.find('.popupMiddle');
         if (popUp.length > 0 && !popUp.text().includes('An error') && popUp.find('p').length > 1) {
+            // tslint:disable-next-line:no-any
             const tcPrice = getIntFromString((popUp.find('p')[0] as any).innerText.trim());
+            // tslint:disable-next-line:no-any
             const itemName = (popUp.find('p')[1] as any).innerText.trim();
             let tcRate = 0;
             if (itemName.startsWith('Tax')) {

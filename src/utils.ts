@@ -1,6 +1,7 @@
 import { AIRCRAFT_TABLE } from './data/aircraftTable';
 import { FlightParameters } from './typings';
 
+// tslint:disable-next-line:no-any
 export function assert(predicate: any) {
     if (!predicate) {
         console.error(`Assert failed`);
@@ -8,6 +9,7 @@ export function assert(predicate: any) {
     }
 }
 
+// tslint:disable-next-line:no-any
 export function waitUntil(predicate: () => any, interval: number, maxRetries: number) {
     return new Promise(function (resolve, reject) {
         let tries = 0;
@@ -46,7 +48,9 @@ export function getIntFromElement(element: JQuery<JQuery.Node[]> | JQuery<HTMLEl
     return getIntFromString(element.text());
 }
 
+// tslint:disable-next-line:no-any
 export function copyWithProperties(obj: any, props: string[]) {
+    // tslint:disable-next-line:no-any
     const result: any = {};
     props.forEach(k => {
         result[k] = obj[k];

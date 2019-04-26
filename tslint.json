@@ -68,6 +68,7 @@
         ]
       }
     ],
+    "no-any": true,
     "no-bitwise": true,
     "no-consecutive-blank-lines": true,
     "no-console": [
@@ -106,6 +107,7 @@
       "always",
       "ignore-bound-class-methods"
     ],
+    "triple-equals": true,
     "typedef-whitespace": [
       true,
       {
@@ -115,8 +117,6 @@
         "property-declaration": "nospace",
         "variable-declaration": "nospace"
       }
-    ],
-    "no-any": false, // TODO: switch on after clean-up
-    "triple-equals": true
+    ]
   }
 }

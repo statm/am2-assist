@@ -1,14 +1,15 @@
-import { isAMPlus, assert, sleep, getIntFromElement } from '../utils';
+import { isAMPlus, assert, sleep, getIntFromElement, getIntFromString } from '../utils';
 import { AJAX_COOLDOWN } from '../constants';
+import { PriceData } from '../typings';
 
 export async function loadPriceData() {
-    const routePriceMap: any = {};
+    const routePriceMap: { [routeId: number]: PriceData } = {};
 
     const auditPage = $($.parseHTML(await $.get('/marketing/internalaudit/linelist')));
     const amPlus = await isAMPlus();
 
     for (const row of auditPage.find('table.internalAuditTable tbody tr[id]').toArray()) {
-        const routeId = $(row).attr('id')!;
+        const routeId = getIntFromString($(row).attr('id')!);
         let priceCells;
 
         if (amPlus) {

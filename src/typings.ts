@@ -20,10 +20,10 @@ export type AircraftData = {
     hubId: number,
     isCargo: false,
     isRental: false,
-    lineList: any,
+    lineList: { [lineId: number]: LineData },
     payloadUsed: 8,
     picture: string,
-    planningList: Array<any>,
+    planningList: Array<PlanData>,
     range: number,
     seatsBus: number,
     seatsEco: number,
@@ -46,15 +46,34 @@ export type RouteData = {
     paxAttCargo: number,
     paxAttEco: number,
     paxAttFirst: number,
-    remaining: Array<Pax>
+    remaining: Array<PaxData>
 };
 
-export type Pax = {
-    eco: number,
-    bus: number,
-    first: number,
-    cargo: number
+// Info about one scheduled line of player's network
+export type LineData = {
+    id: number,
+    name: string,
+    color: string,
+    distance: number,
+    duration: number
 };
+
+// Info about one scheduled flight of player's network
+export type PlanData = {
+    aircraftId: number,
+    lineId: number,
+    takeOffTime: number
+};
+
+export type SeatClassAssociatedData<T> = {
+    eco: T,
+    bus: T,
+    first: T,
+    cargo: T
+};
+
+export type PaxData = SeatClassAssociatedData<number>;
+export type PriceData = SeatClassAssociatedData<number>;
 
 export enum SeatClass {
     ECO = 0,
@@ -73,7 +92,7 @@ export type FlightParameters = {
 export type NetworkData = {
     aircraftList: Array<AircraftData>,
     routeList: Array<RouteData>,
-    aircraftMap: {[id: number]: AircraftData},
-    routeMap: {[id: number]: RouteData},
+    aircraftMap: { [id: number]: AircraftData },
+    routeMap: { [id: number]: RouteData },
     flightParameters: FlightParameters
 };
