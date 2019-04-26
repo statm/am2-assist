@@ -20,7 +20,9 @@ export const aircraftInfoCollection: Plugin = {
                 }
                 output = `[\n${output}]`;
                 // GM_setClipboard(output);
-                console.log('Aircraft list copied to clipboard');
+                // console.log('Aircraft list copied to clipboard');
+                output = output.replace(/\"([^(\")"]+)\":/g, '$1:');
+                console.log(output);
 
                 // Verification
                 assert(aircraftInfo.length === AIRCRAFT_TABLE.length);
