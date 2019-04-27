@@ -2,8 +2,6 @@ import { Plugin } from '../plugin';
 import { getIntFromElement, sleep } from '../utils';
 import { loadSimulationResult } from '../ajax/loadSimulationResult';
 
-// TODO: buggy
-
 function duperSimMain() {
     const SPINNER = `<img src="//goo.gl/aFrC17" width="20">`;
 

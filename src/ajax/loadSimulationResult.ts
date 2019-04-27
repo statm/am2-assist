@@ -4,7 +4,7 @@ export function loadSimulationResult(lineId: number, prices: number[]) {
     const [ECO, BUS, FIRST, CARGO] = [0, 1, 2, 3];
 
     assert(prices.length === 4);
-    return $.post(`/marketing/pricing/priceSimulation/${lineId}`, {
+    return $.post(`/marketing/pricing/pricesimulation/${lineId}`, {
         priceEco: prices[0],
         priceBus: prices[1],
         priceFirst: prices[2],
