@@ -21,7 +21,19 @@ module.exports = {
   },
   module: {
     rules: [
-      { test: /\.ts$/, loader: "ts-loader" }
+      {
+        test: /\.ts$/,
+        enforce: 'pre',
+        loader: 'tslint-loader',
+        options: {
+          configFile: 'tslint.json',
+          failOnHint: true
+        }
+      },
+      { 
+        test: /\.ts$/,
+        loader: "ts-loader"
+      }
     ]
   },
   plugins: [
