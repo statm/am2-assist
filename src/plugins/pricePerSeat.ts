@@ -1,8 +1,6 @@
 import { Plugin } from '../plugin';
 import { assert, getIntFromElement } from '../utils';
 
-// TODO: bug after number box change
-
 export const pricePerSeat: Plugin = {
     name: 'PRICE PER SEAT',
     urlPatterns: ['aircraft/buy/rental/[^/]+', 'aircraft/buy/new/[0-9]+/[^/]+'],
@@ -22,10 +20,12 @@ export const pricePerSeat: Plugin = {
                 return;
             }
 
-            $(this).css({ height: '195px' });
+            if (!isRental) {
+                $(this).css({ height: '205px' });
+            }
             $(this)
                 .find('.content')
-                .css({ height: '115px' });
+                .css({ height: '125px' });
             $(this)
                 .find('.aircraftPrice')
                 .css({ 'max-width': '180px' });
@@ -33,7 +33,7 @@ export const pricePerSeat: Plugin = {
             const priceBox = $(this).find("strong.discountTotalPrice, span:contains(' / Week') b");
             assert(priceBox.length === 1);
 
-            const aircraftQuantitySelect = $(this).find('select.quantitySelect');
+            const aircraftQuantitySelect = $(this).find('input.quantitySelect');
 
             const pricePerPaxBox = $('<span/>');
             priceBox.parent().append(pricePerPaxBox);
