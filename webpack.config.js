@@ -1,3 +1,4 @@
+const path = require('path');
 const WebpackUserscript = require('webpack-userscript');
 
 const headers = {
@@ -12,7 +13,7 @@ module.exports = {
   mode: 'production',
   entry: './src/index.ts',
   output: {
-    path: __dirname,
+    path: path.resolve(__dirname, './dist'),
     filename: 'AM2_Assist.user.js'
   },
   resolve: {

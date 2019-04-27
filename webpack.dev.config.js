@@ -7,7 +7,7 @@ module.exports = {
   devtool: 'eval-source-map',
   plugins: [],
   devServer: {
-    contentBase: ['.', './dev'],
+    contentBase: ['./dist', './dev'],
     hot: false,
     inline: false,
     headers: {
