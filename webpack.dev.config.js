@@ -4,7 +4,7 @@ module.exports = {
   ...webpackConfig,
 
   mode: 'development',
-  devtool: 'inline-source-map',
+  devtool: 'eval-source-map',
   plugins: [],
   devServer: {
     contentBase: ['.', './dev'],
