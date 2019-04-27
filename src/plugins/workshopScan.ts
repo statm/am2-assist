@@ -2,6 +2,7 @@ import { Plugin } from '../plugin';
 import { loadWorkshopInfo } from '../ajax/loadWorkshopInfo';
 import { getIntFromString } from '../utils';
 
+// TODO: update item processing logic
 // TODO: auto claim
 
 export const workshopScan: Plugin = {
