@@ -9,6 +9,7 @@
 // @contributor henryzhou
 // @contributor jiak94
 // @license     MIT
+// @updateURL   http://localhost:8080/AM2_Assist.dev.user.js
 // ==/UserScript==
 
 $.ajax({ url: 'http://localhost:8080/AM2_Assist.user.js', crossDomain: true });
