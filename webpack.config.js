@@ -6,7 +6,7 @@ const headers = {
   contributor: ['henryzhou', 'jiak94'],
   license: 'MIT',
   match: ['http://www.airlines-manager.com/*', 'https://www.airlines-manager.com/*'],
-  updateURL: 'https://github.com/statm/am2-assist/releases/latest/download/AM2_Assist.user.js'
+  updateURL: 'https://github.com/statm/am2-assist/releases/download/latest/AM2_Assist.user.js'
 }
 
 module.exports = {
