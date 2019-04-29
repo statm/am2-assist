@@ -2,6 +2,7 @@ const path = require('path');
 const WebpackUserscript = require('webpack-userscript');
 
 const headers = {
+  name: 'AM2 Assist',
   namespace: 'http://tampermonkey.net',
   contributor: ['henryzhou', 'jiak94'],
   license: 'MIT',
