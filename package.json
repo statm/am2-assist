@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "webpack",
+    "build:dev": "webpack --d",
     "start": "webpack-dev-server --config webpack.dev.config.js"
   },
   "repository": {

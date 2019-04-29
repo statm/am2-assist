@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        am2-assist-dev
+// @name        AM2 Assist (dev)
 // @version     1.0.0
 // @author      statm
 // @description Airlines Manager 2 Assist (Dev Bootstrapper)
