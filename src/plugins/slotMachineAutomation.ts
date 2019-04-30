@@ -13,7 +13,7 @@ export const slotMachineAutomation: Plugin = {
 
         $('#gameAlsoOnMobile').remove();
 
-        const logArea = $("<textarea style='width:710px;height:100px;margin:25px 15px 0px 15px' readonly />");
+        const logArea = $('<textarea style="width:710px;height:100px;margin:25px 15px 0px 15px" readonly />');
         $('.cockpitASousContent').append(logArea);
 
         $('button#playForOneTicket')

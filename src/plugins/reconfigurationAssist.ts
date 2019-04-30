@@ -3,33 +3,39 @@ import { PAGE_URL, DAYS_SHORT } from '../constants';
 import { loadNetworkData } from '../ajax/loadNetworkData';
 import { getIntFromElement, getFlightDuration, getIntFromString } from '../utils';
 
+// TODO: wrong layout with cargo aircrafts
+// TODO: reload button on loadNetworkData failure (5 sec)
+
 export const reconfigurationAssist: Plugin = {
     name: 'RECONFIGURATION ASSIST',
     urlPatterns: ['aircraft/show/[0-9]+/reconfigure', 'aircraft/buy/new/[0-9]+/[^/]+/.*'],
     action: async function () {
-        $(`<style type='text/css'>
-            #reconfigBox { float: right; width: 225px; height: 400px; overflow-y: auto; border: 1px solid #aaa; border-radius: 4px; margin-right: 2px; background-color: #fff }
-            #reconfigBox::-webkit-scrollbar { width: 10px }
-            #reconfigBox::-webkit-scrollbar-track { background-color: #f1f1f1; border-top-right-radius: 4px; border-bottom-right-radius: 4px }
-            #reconfigBox::-webkit-scrollbar-thumb { background-color: #c1c1c1 }
-            .route-title { width: 100%; height: 23px; display: flex; align-items: center; background-color: #bde9ff; color: #585d69 }
-            .route-name { font-weight: bold; padding-left: 5px }
-            .route-dist { flex: 1; text-align: right; font-weight: bold; padding-right: 5px }
-            .pax-line { display: flex; align-items: center; padding: 4px 5px }
-            .pax-line span { display: inline-block; text-align: right }
-            .day-box { width: 58px; margin-right: 4px; color: #585d69 }
-            .pax-box { width: 36px; font-weight: bold }
-            .num-pos { color: #8ecb47 }
-            .num-neg { color: #da4e28 }
-        </style>`).appendTo('head');
+        $(`
+            <style type='text/css'>
+                #reconfigBox { float: right; width: 225px; height: 400px; overflow-y: auto; border: 1px solid #aaa; border-radius: 4px; margin-right: 2px; background-color: #fff }
+                #reconfigBox::-webkit-scrollbar { width: 10px }
+                #reconfigBox::-webkit-scrollbar-track { background-color: #f1f1f1; border-top-right-radius: 4px; border-bottom-right-radius: 4px }
+                #reconfigBox::-webkit-scrollbar-thumb { background-color: #c1c1c1 }
+                .route-title { width: 100%; height: 23px; display: flex; align-items: center; background-color: #bde9ff; color: #585d69 }
+                .route-name { font-weight: bold; padding-left: 5px }
+                .route-dist { flex: 1; text-align: right; font-weight: bold; padding-right: 5px }
+                .pax-line { display: flex; align-items: center; padding: 4px 5px }
+                .pax-line span { display: inline-block; text-align: right }
+                .day-box { width: 58px; margin-right: 4px; color: #585d69 }
+                .pax-box { width: 36px; font-weight: bold }
+                .num-pos { color: #8ecb47 }
+                .num-neg { color: #da4e28 }
+            </style>
+        `).appendTo('head');
 
-        const reconfigBox =$(
-            `<div id="reconfigBox">
+        const reconfigBox =$(`
+            <div id="reconfigBox">
                 <div style="line-height:290px;text-align:center">
                     <img src="//goo.gl/aFrC17" width="20">
                     <span style="vertical-align:middle;margin-left:3px;color:#585d69">Loading...</span>
                 </div>
-            </div>`);
+            </div>
+        `);
         const ownAircraftMatch = PAGE_URL.match(/aircraft\/show\/([0-9]+)\/reconfigure/);
         if (!ownAircraftMatch) {
             reconfigBox.css({ height: '300px', 'margin-top': '70px' });
@@ -71,12 +77,12 @@ export const reconfigurationAssist: Plugin = {
                 const flightTimeH = Math.floor(flightTime / 60);
                 const flightTimeM = flightTime % 60;
 
-                const titleBox = $(
-                    `<div class='route-title'>
-                        <span class='route-name'>${route.name}</span>
-                        <span class='route-dist'>${route.distance}km (${flightTimeH}h${flightTimeM})</span>
-                        </div>`
-                );
+                const titleBox = $(`
+                    <div class="route-title">
+                        <span class="route-name">${route.name}</span>
+                        <span class="route-dist">${route.distance}km (${flightTimeH}h${flightTimeM})</span>
+                    </div>
+                `);
                 reconfigBox.append(titleBox);
 
                 const paxGroup = [];
@@ -108,15 +114,15 @@ export const reconfigurationAssist: Plugin = {
                             ? `${DAYS_SHORT[paxSeg.days[0]]}`
                             : `${DAYS_SHORT[paxSeg.days[0]]}-${DAYS_SHORT[paxSeg.days[paxSeg.days.length - 1]]}`;
                     const paxData = paxSeg.pax;
-                    const paxBox = $(
-                        `<div class='pax-line'>
-                            <span class='day-box'>${dayText}</span>
-                            <span class='pax-box ${getPaxTextClass(paxData.eco)}'>${paxData.eco}</span>
-                            <span class='pax-box ${getPaxTextClass(paxData.bus)}'>${paxData.bus}</span>
-                            <span class='pax-box ${getPaxTextClass(paxData.first)}'>${paxData.first}</span>
-                            <span class='pax-box ${getPaxTextClass(paxData.cargo)}'>${paxData.cargo}T</span>
-                            </div>`
-                    );
+                    const paxBox = $(`
+                        <div class="pax-line">
+                            <span class="day-box">${dayText}</span>
+                            <span class="pax-box ${getPaxTextClass(paxData.eco)}">${paxData.eco}</span>
+                            <span class="pax-box ${getPaxTextClass(paxData.bus)}">${paxData.bus}</span>
+                            <span class="pax-box ${getPaxTextClass(paxData.first)}">${paxData.first}</span>
+                            <span class="pax-box ${getPaxTextClass(paxData.cargo)}'>${paxData.cargo}T</span>
+                        </div>
+                    `);
                     reconfigBox.append(paxBox);
                 });
             });
