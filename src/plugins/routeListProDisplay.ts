@@ -1,12 +1,6 @@
 import { Plugin } from '../plugin';
 import { assert, isAMPlus } from '../utils';
 
-function isInProDisplay(): boolean {
-    const tableCount = $('div#displayPro').length;
-    assert(tableCount === 0 || tableCount === 1);
-    return tableCount === 1;
-}
-
 class HubInfo {
     public isShared: boolean;
     public name: string;
@@ -171,19 +165,28 @@ export const routeListProDisplay: Plugin = {
     name: 'ROUTE LIST PRO DISPLAY',
     urlPatterns: ['network/[^/]*'],
     action: async function () {
-        if (isInProDisplay()) {
-            return;
+        const tableCount = $('div#displayPro').length;
+        assert(tableCount === 0 || tableCount === 1);
+        const isInProDisplay = tableCount === 1;
+
+        // Construct and display pro table
+        if (!isInProDisplay) {
+            const [hubs, routes] = extractInfo();
+            const proDisplayTables = constructTables(hubs, routes);
+            $('div#displayRegular').replaceWith(proDisplayTables);
         }
 
-        const [hubs, routes] = extractInfo();
-        const proDisplayTables = constructTables(hubs, routes);
-        $('div#displayRegular').replaceWith(proDisplayTables);
-
+        // Remove view switch button
         if (await isAMPlus()) {
-            $('img#displayMode').parent().remove();
+            if (isInProDisplay) {
+                $('img#displayMode').parent().remove();
+            }
         } else {
             $('a#displayMode').remove();
             $('div#popupAmPlusSubscribe').remove();
         }
+
+        // UI tweaks
+        $('form#map_options').css('margin-bottom', 0);
     }
 };

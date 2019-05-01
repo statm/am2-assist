@@ -4,12 +4,6 @@ import { PAGE_URL } from '../constants';
 
 const isRentalPage = PAGE_URL.includes('aircraft/rental');
 
-function isInProDisplay(): boolean {
-    const tableCount = $('.aircraftListViewTable').length;
-    assert(tableCount === 0 || tableCount === 1);
-    return tableCount === 1;
-}
-
 class AirCraftInfo {
     public isCargo: boolean;
     public isLease: boolean;
@@ -188,20 +182,31 @@ export const aircraftListProDisplay: Plugin = {
     name: 'AIRCRAFT LIST PRO DISPLAY',
     urlPatterns: ['aircraft[^/]*', 'aircraft/rental[^/]*'],
     action: async function () {
-        if (isInProDisplay()) {
-            return;
+        const tableCount = $('.aircraftListViewTable').length;
+        assert(tableCount === 0 || tableCount === 1);
+        const isInProDisplay = tableCount === 1;
+
+        // Construct and display pro table
+        if (!isInProDisplay) {
+            const aircraftListInfo = extractInfo();
+            console.log(aircraftListInfo);
+            const proDisplayTable = constructTable(aircraftListInfo);
+            $('div.aircraftListView').empty().prepend(proDisplayTable);
         }
 
-        const aircraftListInfo = extractInfo();
-        console.log(aircraftListInfo);
-        const proDisplayTable = constructTable(aircraftListInfo);
-        $('div.aircraftListView').empty().prepend(proDisplayTable);
-
+        // Remove view switch button
         if (await isAMPlus()) {
-            $('img#displayMode').parent().remove();
+            if (isInProDisplay) {
+                $('img#displayMode').parent().remove();
+            }
         } else {
             $('a#displayMode').remove();
             $('div#popupAmPlusSubscribe').remove();
         }
+
+        // UI tweaks
+        $('div.hubFilterBox').css('margin-bottom', 0);
+        $('div.aircraftListView').css('margin-top', 0);
+        $('div.cleaner').remove();
     }
 };
