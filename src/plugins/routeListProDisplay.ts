@@ -179,7 +179,9 @@ export const routeListProDisplay: Plugin = {
         const proDisplayTables = constructTables(hubs, routes);
         $('div#displayRegular').replaceWith(proDisplayTables);
 
-        if (!await isAMPlus()) {
+        if (await isAMPlus()) {
+            $('img#displayMode').parent().remove();
+        } else {
             $('a#displayMode').remove();
             $('div#popupAmPlusSubscribe').remove();
         }

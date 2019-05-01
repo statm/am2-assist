@@ -197,7 +197,9 @@ export const aircraftListProDisplay: Plugin = {
         const proDisplayTable = constructTable(aircraftListInfo);
         $('div.aircraftListView').empty().prepend(proDisplayTable);
 
-        if (!await isAMPlus()) {
+        if (await isAMPlus()) {
+            $('img#displayMode').parent().remove();
+        } else {
             $('a#displayMode').remove();
             $('div#popupAmPlusSubscribe').remove();
         }
