@@ -11,19 +11,20 @@ function duperSimMain() {
     }
     const simulationCost = getIntFromElement(simulationCostBox);
 
-    $(`<style type='text/css'>
-        #duperSimErrorBox { width: 598px; height: 40px; margin-bottom: 20px; padding: 0 12px; float: right; background-color: #fff2f2; color: #da4e28; display: flex; align-items: center }
-        #duperSimErrorMessage { margin-left: 5px }
-        #duperSimTable { margin-top: 13px; margin-left: auto; width: 622px; table-layout: fixed }
-        #duperSimTable tr { height: 35px }
-        #duperSimTable tbody tr:nth-child(even) { background-color: #f3fafe }
-        #duperSimTable td:first-child { width: 130px; text-align: right; padding-right: 5px }
-        #duperSimTable tbody td:not(:first-child), #duperSimTable thead { font-weight: bold }
-        #duperSimTable td { vertical-align: middle; border-left: 2px solid #fff; border-right: 2px solid #fff }
-        #duperSimTable td:not(:first-child) { text-align: center }
-        #duperSimTable .new-segment { border-top: 1px dashed #aaa }
-        .num-pos { color: #8ecb47 }
-        .num-neg { color: #da4e28 }
+    $(`
+        <style type='text/css'>
+            #duperSimErrorBox { width: 598px; height: 40px; margin-bottom: 20px; padding: 0 12px; float: right; background-color: #fff2f2; color: #da4e28; display: flex; align-items: center }
+            #duperSimErrorMessage { margin-left: 5px }
+            #duperSimTable { margin-top: 13px; margin-left: auto; width: 622px; table-layout: fixed }
+            #duperSimTable tr { height: 35px }
+            #duperSimTable tbody tr:nth-child(even) { background-color: #f3fafe }
+            #duperSimTable td:first-child { width: 130px; text-align: right; padding-right: 5px }
+            #duperSimTable tbody td:not(:first-child), #duperSimTable thead { font-weight: bold }
+            #duperSimTable td { vertical-align: middle; border-left: 2px solid #fff; border-right: 2px solid #fff }
+            #duperSimTable td:not(:first-child) { text-align: center }
+            #duperSimTable .new-segment { border-top: 1px dashed #aaa }
+            .num-pos { color: #8ecb47 }
+            .num-neg { color: #da4e28 }
        </style>
     `).appendTo('head');
 

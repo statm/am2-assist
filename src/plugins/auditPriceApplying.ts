@@ -14,10 +14,12 @@ export const auditPriceApplying: Plugin = {
         }
 
         assert($('a.marketing_PriceLink').length === 1);
-        $(`<a id="applyIdealPricesButton" class="gradientButton gradientButtonYellow" style="float:right;cursor:pointer;user-select:none">
-            <img src="//goo.gl/Tpw577" width="28" height="28">
-            <span>Apply ideal prices</span>
-        </a>`).insertBefore('a.marketing_PriceLink');
+        $(`
+            <a id="applyIdealPricesButton" class="gradientButton gradientButtonYellow" style="float:right;cursor:pointer;user-select:none">
+                <img src="//goo.gl/Tpw577" width="28" height="28">
+                <span>Apply ideal prices</span>
+            </a>
+        `).insertBefore('a.marketing_PriceLink');
         $('#applyIdealPricesButton, a.marketing_PriceLink').wrapAll(`<div/>`);
 
         $('#applyIdealPricesButton').click(function() {

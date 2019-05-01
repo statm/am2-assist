@@ -10,16 +10,18 @@ import { maximizeLoanAmountFM } from './maximizeLoanAmountFM';
 import { maximizeLoanAmountExpress } from './maximizeLoanAmountExpress';
 import { pricePerSeat } from './pricePerSeat';
 import { aircraftFiltering } from './aircraftFiltering';
-import { aircraftListStickyHeader } from './aircraftListStickyHeader';
+import { aircraftPurchaseListStickyHeader } from './aircraftPurchaseListStickyHeader';
 import { duperSim } from './duperSim';
 import { tcRateDisplay } from './tcRateDisplay';
 import { routeFiltering } from './routeFiltering';
-import { routeListStickyHeader } from './routeListStickyHeader';
+import { routePurchaseListStickyHeader } from './routePurchaseListStickyHeader';
 import { auditPriceApplying } from './auditPriceApplying';
 import { auditListEnhancement } from './auditListEnhancement';
 import { playerDataCollection } from './playerDataCollection';
 import { aircraftInfoCollection } from './aircraftInfoCollection';
 import { workshopScan } from './workshopScan';
+import { aircraftListProDisplay } from './aircraftListProDisplay';
+import { routeListProDisplay } from './routeListProDisplay';
 
 export function registerAllPlugins() {
     registerPlugin(slotMachineAutomation);
@@ -32,14 +34,16 @@ export function registerAllPlugins() {
     registerPlugin(maximizeLoanAmountExpress);
     registerPlugin(pricePerSeat);
     registerPlugin(aircraftFiltering);
-    registerPlugin(aircraftListStickyHeader);
+    registerPlugin(aircraftPurchaseListStickyHeader);
     registerPlugin(duperSim);
     registerPlugin(tcRateDisplay);
     registerPlugin(routeFiltering);
-    registerPlugin(routeListStickyHeader);
+    registerPlugin(routePurchaseListStickyHeader);
     registerPlugin(auditPriceApplying);
     registerPlugin(auditListEnhancement);
     registerPlugin(workshopScan);
+    registerPlugin(aircraftListProDisplay);
+    registerPlugin(routeListProDisplay);
 
     registerPlugin(playerDataCollection);
     registerPlugin(aircraftInfoCollection);
