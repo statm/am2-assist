@@ -163,7 +163,7 @@ function constructTables(hubs: Array<HubInfo>, routes: Array<RouteInfo>): JQuery
 
 export const routeListProDisplay: Plugin = {
     name: 'ROUTE LIST PRO DISPLAY',
-    urlPatterns: ['network/[^/]*'],
+    urlPatterns: ['network/'],
     action: async function () {
         const tableCount = $('div#displayPro').length;
         assert(tableCount === 0 || tableCount === 1);
