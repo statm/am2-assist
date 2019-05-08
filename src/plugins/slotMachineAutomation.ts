@@ -10,6 +10,7 @@ export const slotMachineAutomation: Plugin = {
         let logText = '';
         const harvest: {[harvestType: string]: number} = {};
         const harvestNames = [['d', '$'], ['rd', 'R$'], ['t', 'Tickets'], ['tr', 'TC']];
+        const endedLine = '================== Ended ==================\n';
 
         $('#gameAlsoOnMobile').remove();
 
@@ -39,7 +40,7 @@ export const slotMachineAutomation: Plugin = {
                 if (data.errorMsg) {
                     playing = false;
                     log(`${data.errorMsg} (Error ${data.errorCode})\n`);
-                    log(`================== Ended ==================\n`);
+                    log(endedLine);
                     return;
                 }
 
@@ -61,7 +62,7 @@ export const slotMachineAutomation: Plugin = {
 
                 if (!data.isAllowToPlay || data.nbOfTickets === 0) {
                     playing = false;
-                    log(`================== Ended ==================\n`);
+                    log(endedLine);
                     for (const harvestNamePair of harvestNames) {
                         const harvestName = harvestNamePair[0];
                         const harvestDisplayName = harvestNamePair[1];
