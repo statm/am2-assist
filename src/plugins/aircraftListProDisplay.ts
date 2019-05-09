@@ -189,7 +189,6 @@ export const aircraftListProDisplay: Plugin = {
         // Construct and display pro table
         if (!isInProDisplay) {
             const aircraftListInfo = extractInfo();
-            console.log(aircraftListInfo);
             const proDisplayTable = constructTable(aircraftListInfo);
             $('div.aircraftListView').empty().prepend(proDisplayTable);
         }
