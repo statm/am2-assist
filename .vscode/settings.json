@@ -1,8 +1,0 @@
-{
-    "eslint.validate": [
-        "javascript"
-    ],
-    "eslint.autoFixOnSave": true,
-    "javascript.format.insertSpaceBeforeFunctionParenthesis": false,
-    "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
-}
