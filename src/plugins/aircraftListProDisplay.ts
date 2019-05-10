@@ -1,6 +1,8 @@
 import { Plugin } from '../plugin';
 import { assert, isAMPlus } from '../utils';
 import { PAGE_URL } from '../constants';
+import { AIRCRAFT_TABLE } from '../data/aircraftTable';
+import { AircraftInfo } from '../typings';
 
 const isRentalPage = PAGE_URL.includes('aircraft/rental');
 
@@ -178,6 +180,23 @@ function constructTable(list: Array<AirCraftInfo>): JQuery<HTMLElement> {
     return result;
 }
 
+function addCapacityInfo() {
+    $('table.aircraftListViewTable th:eq(6) span').text('Seats (Cap)');
+    $('table.aircraftListViewTable tbody tr:not(:first-child)').each(function() {
+        const row = $(this);
+        const seatBox = row.find('td:eq(6) b');
+        const aircraftTypeName = row.find('td.tableString b span.editAircraftName').get(0).previousSibling!.nodeValue!.replace('/', '').trim();
+
+        // Update seat number box
+        let updatedText = seatBox.text();
+        const aircraftData = AIRCRAFT_TABLE.find((data: AircraftInfo) => data.name === aircraftTypeName );
+        if (aircraftData !== undefined) {
+            updatedText += ` (${aircraftData.seats})`;
+        }
+        seatBox.text(updatedText);
+    });
+}
+
 export const aircraftListProDisplay: Plugin = {
     name: 'AIRCRAFT LIST PRO DISPLAY',
     urlPatterns: ['aircraft[^/]*', 'aircraft/rental[^/]*'],
@@ -191,6 +210,11 @@ export const aircraftListProDisplay: Plugin = {
             const aircraftListInfo = extractInfo();
             const proDisplayTable = constructTable(aircraftListInfo);
             $('div.aircraftListView').empty().prepend(proDisplayTable);
+        }
+
+        // Add capacity data
+        if (!isRentalPage) {
+            addCapacityInfo();
         }
 
         // Remove view switch button
