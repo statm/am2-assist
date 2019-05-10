@@ -21,7 +21,7 @@ export const aircraftInfoCollection: Plugin = {
                 output = `[\n${output}]`;
                 // GM_setClipboard(output);
                 // console.log('Aircraft list copied to clipboard');
-                output = output.replace(/\"([^(\")"]+)\":/g, '$1:');
+                output = output.replace(/\"([^(\")"]+)\":/g, '$1:').replace(/"/g, '\'');
                 console.log(output);
 
                 // Verification
