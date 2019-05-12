@@ -1,14 +1,14 @@
 import { Plugin } from '../plugin';
-import { isAMPlus } from '../utils';
+// import { isAMPlus } from '../utils';
 
-async function addButton() {
-    if (await isAMPlus()) {
-        return;
-    }
+function addButton() {
+    // if (await isAMPlus()) {
+    //     return;
+    // }
     const button = $(`
-        <li class="collectButton amCoinsPurchase">
+        <li class="amCoinsPurchase">
             <div>
-                <a id="collectButton" class="validBtnBlue">
+                <a href="#collectButton" id="collectButton" class="validBtnBlue">
                     <div>
                         <p>Deliver All</p>
                     </div>
@@ -20,20 +20,24 @@ async function addButton() {
     $('li.deliverAll').remove();
 }
 
-async function collect() {
+function collect() {
     const b = $('div.date a');
+    const elements: Array<HTMLElement> = [];
     for (let i = 0; i < b.length; i++) {
         if (!b[i].className.includes('hidden')) {
             const link = b[i].getAttribute('href');
-            // console.log(b[i].getAttribute('href'));
+            console.log(link);
             try {
-                await $.get(`${link}`);
-                $('#rightInfoBoxContent li')[i].remove();
+                $.get(`${link}`);
+                elements.push($('#rightInfoBoxContent li')[i]);
             } catch (e) {
                 console.log('error on getting ' + link);
             }
         }
     }
+    elements.forEach(element => {
+        element.remove();
+    });
 }
 
 export const collectDeliveries: Plugin = {
@@ -41,6 +45,6 @@ export const collectDeliveries: Plugin = {
     urlPatterns: ['.*'],
     action: function() {
         addButton();
-        $('li.collectButton').click(collect);
+        $('#collectButton').click(collect);
     }
 };
