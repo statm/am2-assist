@@ -1,8 +1,8 @@
 import { Plugin } from '../plugin';
 import { isAMPlus } from '../utils';
 
-function addButton() {
-    if (isAMPlus()) {
+async function addButton() {
+    if (await isAMPlus()) {
         return;
     }
     const button = $(`
