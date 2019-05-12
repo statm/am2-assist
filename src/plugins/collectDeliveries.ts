@@ -1,10 +1,10 @@
 import { Plugin } from '../plugin';
-// import { isAMPlus } from '../utils';
+import { isAMPlus } from '../utils';
 
-function addButton() {
-    // if (await isAMPlus()) {
-    //     return;
-    // }
+async function addButton() {
+    if (await isAMPlus()) {
+        return;
+    }
     const button = $(`
         <li class="amCoinsPurchase">
             <div>
@@ -20,15 +20,15 @@ function addButton() {
     $('li.deliverAll').remove();
 }
 
-function collect() {
+async function collect() {
+    console.log('start collecting');
     const b = $('div.date a');
     const elements: Array<HTMLElement> = [];
     for (let i = 0; i < b.length; i++) {
         if (!b[i].className.includes('hidden')) {
             const link = b[i].getAttribute('href');
-            console.log(link);
             try {
-                $.get(`${link}`);
+                await $.get(`${link}`);
                 elements.push($('#rightInfoBoxContent li')[i]);
             } catch (e) {
                 console.log('error on getting ' + link);
