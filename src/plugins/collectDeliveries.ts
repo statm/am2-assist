@@ -1,6 +1,10 @@
 import { Plugin } from '../plugin';
+import { isAMPlus } from '../utils';
 
 function addButton() {
+    if (isAMPlus()) {
+        return;
+    }
     const button = $(`
         <li class="collectButton amCoinsPurchase">
             <div>
