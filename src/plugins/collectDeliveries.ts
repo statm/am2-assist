@@ -37,7 +37,7 @@ async function collect() {
 }
 
 export const collectDeliveries: Plugin = {
-    name: 'Collect Deliveries',
+    name: 'COLLECT DELIVERIES',
     urlPatterns: ['.*'],
     action: function() {
         addButton();
