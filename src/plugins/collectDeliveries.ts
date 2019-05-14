@@ -6,9 +6,9 @@ async function addButton() {
         return;
     }
     const button = $(`
-        <li class="collectButton amCoinsPurchase">
+        <li class="amCoinsPurchase">
             <div>
-                <a id="collectButton" class="validBtnBlue">
+                <a href="#collectButton" id="collectButton" class="validBtnBlue">
                     <div>
                         <p>Deliver All</p>
                     </div>
@@ -21,19 +21,23 @@ async function addButton() {
 }
 
 async function collect() {
+    console.log('start collecting');
     const b = $('div.date a');
+    const elements: Array<HTMLElement> = [];
     for (let i = 0; i < b.length; i++) {
         if (!b[i].className.includes('hidden')) {
-            const link = b[i].getAttribute('href');
-            // console.log(b[i].getAttribute('href'));
+            const link = b[i].getAttribute('href')!;
             try {
-                await $.get(`${link}`);
-                $('#rightInfoBoxContent li')[i].remove();
+                await $.get(link);
+                elements.push($('#rightInfoBoxContent li')[i]);
             } catch (e) {
                 console.log('error on getting ' + link);
             }
         }
     }
+    elements.forEach(element => {
+        element.remove();
+    });
 }
 
 export const collectDeliveries: Plugin = {
@@ -41,6 +45,6 @@ export const collectDeliveries: Plugin = {
     urlPatterns: ['.*'],
     action: function() {
         addButton();
-        $('li.collectButton').click(collect);
+        $('#collectButton').click(collect);
     }
 };
