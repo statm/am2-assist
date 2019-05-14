@@ -28,7 +28,7 @@ async function collect() {
         if (!b[i].className.includes('hidden')) {
             const link = b[i].getAttribute('href');
             try {
-                await $.get(`${link}`);
+                await $.get(link);
                 elements.push($('#rightInfoBoxContent li')[i]);
             } catch (e) {
                 console.log('error on getting ' + link);
