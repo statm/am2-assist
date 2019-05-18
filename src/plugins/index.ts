@@ -19,6 +19,7 @@ import { auditListEnhancement } from './auditListEnhancement';
 import { aircraftListProDisplay } from './aircraftListProDisplay';
 import { routeListProDisplay } from './routeListProDisplay';
 import { workshopScan } from './workshopScan';
+import { collectDeliveries } from './collectDeliveries';
 
 export function registerAllPlugins() {
     registerPlugin(slotMachineAutomation);
@@ -40,6 +41,7 @@ export function registerAllPlugins() {
     registerPlugin(aircraftListProDisplay);
     registerPlugin(routeListProDisplay);
     registerPlugin(workshopScan);
+    registerPlugin(collectDeliveries);
 
     // dev purpose only
     // registerPlugin(playerDataCollection);
