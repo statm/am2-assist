@@ -1,7 +1,7 @@
 {
   "name": "am2-assist",
   "description": "Airlines Manager 2 Assist",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "scripts": {
     "build": "webpack",
     "build:dev": "webpack --d",
