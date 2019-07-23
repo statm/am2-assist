@@ -18,6 +18,7 @@ import { aircraftListProDisplay } from './aircraftListProDisplay';
 import { routeListProDisplay } from './routeListProDisplay';
 import { workshopScan } from './workshopScan';
 import { collectDeliveries } from './collectDeliveries';
+import { massPricing } from './massPricing';
 
 export function registerAllPlugins() {
     registerPlugin(slotMachineAutomation);
@@ -38,6 +39,7 @@ export function registerAllPlugins() {
     registerPlugin(routeListProDisplay);
     registerPlugin(workshopScan);
     registerPlugin(collectDeliveries);
+    registerPlugin(massPricing);
 
     // dev purpose only
     // registerPlugin(playerDataCollection);
