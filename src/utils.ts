@@ -69,3 +69,7 @@ export function getAircraftInfo(name: string) {
 export async function isAMPlus() {
     return $($.parseHTML(await $.get('/amplus/'))).find('.nbDayAmPlus').length > 0;
 }
+
+export function getPax(eco: number, bus: number, first: number) {
+    return Math.ceil(eco + 1.8 * bus + 4.2 * first);
+}

@@ -19,6 +19,7 @@ import { routeListProDisplay } from './routeListProDisplay';
 import { workshopScan } from './workshopScan';
 import { collectDeliveries } from './collectDeliveries';
 import { massPricing } from './massPricing';
+import { paxDisplay } from './paxDisplay';
 
 export function registerAllPlugins() {
     registerPlugin(slotMachineAutomation);
@@ -40,6 +41,7 @@ export function registerAllPlugins() {
     registerPlugin(workshopScan);
     registerPlugin(collectDeliveries);
     registerPlugin(massPricing);
+    registerPlugin(paxDisplay);
 
     // dev purpose only
     // registerPlugin(playerDataCollection);
