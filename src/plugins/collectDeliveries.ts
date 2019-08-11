@@ -1,14 +1,14 @@
 import { Plugin } from '../plugin';
-// import { isAMPlus } from '../utils';
+import { isAMPlus } from '../utils';
 
-function addButton() {
-    // if (await isAMPlus()) {
-    //     return;
-    // }
+async function addButton() {
+    if (await isAMPlus()) {
+        return;
+    }
     const button = $(`
         <li class="amCoinsPurchase">
             <div>
-                <a href="#collectButton" id="collectButton" class="validBtnBlue">
+                <a href="#" id="collectButton" class="validBtnBlue">
                     <div>
                         <p>Deliver All</p>
                     </div>
@@ -45,6 +45,9 @@ export const collectDeliveries: Plugin = {
     urlPatterns: ['.*'],
     action: function() {
         addButton();
-        $('#collectButton').click(collect);
+        $('#collectButton').on("click", function() {
+            collect();
+            return false;
+        })
     }
 };
