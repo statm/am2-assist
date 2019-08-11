@@ -9,10 +9,8 @@ import { reconfigurationAssist } from './reconfigurationAssist';
 import { maximizeLoanAmountFM } from './maximizeLoanAmountFM';
 import { maximizeLoanAmountExpress } from './maximizeLoanAmountExpress';
 import { pricePerSeat } from './pricePerSeat';
-import { aircraftFiltering } from './aircraftFiltering';
 import { aircraftPurchaseListStickyHeader } from './aircraftPurchaseListStickyHeader';
 import { duperSim } from './duperSim';
-import { routeFiltering } from './routeFiltering';
 import { routePurchaseListStickyHeader } from './routePurchaseListStickyHeader';
 import { auditPriceApplying } from './auditPriceApplying';
 import { auditListEnhancement } from './auditListEnhancement';
@@ -20,6 +18,8 @@ import { aircraftListProDisplay } from './aircraftListProDisplay';
 import { routeListProDisplay } from './routeListProDisplay';
 import { workshopScan } from './workshopScan';
 import { collectDeliveries } from './collectDeliveries';
+import { massPricing } from './massPricing';
+import { paxDisplay } from './paxDisplay';
 
 export function registerAllPlugins() {
     registerPlugin(slotMachineAutomation);
@@ -31,10 +31,8 @@ export function registerAllPlugins() {
     registerPlugin(maximizeLoanAmountFM);
     registerPlugin(maximizeLoanAmountExpress);
     registerPlugin(pricePerSeat);
-    registerPlugin(aircraftFiltering);
     registerPlugin(aircraftPurchaseListStickyHeader);
     registerPlugin(duperSim);
-    registerPlugin(routeFiltering);
     registerPlugin(routePurchaseListStickyHeader);
     registerPlugin(auditPriceApplying);
     registerPlugin(auditListEnhancement);
@@ -42,6 +40,8 @@ export function registerAllPlugins() {
     registerPlugin(routeListProDisplay);
     registerPlugin(workshopScan);
     registerPlugin(collectDeliveries);
+    registerPlugin(massPricing);
+    registerPlugin(paxDisplay);
 
     // dev purpose only
     // registerPlugin(playerDataCollection);

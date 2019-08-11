@@ -2,7 +2,7 @@ import { Plugin } from '../plugin';
 
 export const auditListEnhancement: Plugin = {
     name: 'AUDIT LIST ENHANCEMENT',
-    urlPatterns: ['marketing/internalaudit/linelist(\\?.*)?'],
+    urlPatterns: ['marketing/internalaudit/linelist[^/]*'],
     action: function() {
         $('td.reliability').next().each(function() {
             const pricingUrl = $(this).find('a').attr('href')!.replace('internalaudit', 'pricing');
