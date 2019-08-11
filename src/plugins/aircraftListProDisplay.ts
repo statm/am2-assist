@@ -23,6 +23,7 @@ class AirCraftInfo {
     public age: string;
     public detailsUrl: string;
     public avatarUrl: string;
+    public aircraftId: string;
 
     // Lease-only
     public securityDeposit: string;
@@ -45,6 +46,7 @@ function extractInfo(): Array<AirCraftInfo> {
         info.name = box.find('div.title span.editAircraftName');
         info.categoryIcon = box.find('div.title img').get(0).outerHTML;
         info.detailsUrl = box.find('div.title a:not(.useAjax)').attr('href')!;
+        info.aircraftId = info.detailsUrl.split('/')[3];
 
         if (!isRentalPage) {
             info.range = box.find('span.listBoxInfo:eq(0) b').text();
@@ -73,6 +75,76 @@ function extractInfo(): Array<AirCraftInfo> {
         result.push(info);
     });
     return result;
+}
+
+function addCssClass() {
+    const style = $(`
+        <style type="text/css">
+            .BtnDetailAvionProSell {
+                position: relative;
+                display: inline-block;
+                width: 20px;
+                height: 20px;
+                top: 7px;
+                background: url(/images/icons30/aircraft_sell.png) 0 0 no-repeat;
+                background-size: cover;
+                z-index: 1;
+                text-decoration: none;
+                float: right;
+            }
+        </style>
+    `);
+    style.appendTo('head');
+}
+
+async function extractToken(aircraftId: string) {
+    const sellResp = await fetch(`/aircraft/show/${aircraftId}/sell`);
+    if (sellResp.status !== 200) {
+        return undefined;
+    }
+    const sellPageHtml = await sellResp.text();
+    const pricePage = $($.parseHTML(sellPageHtml));
+    const token = pricePage.find('#form__token');
+    if (token.length === 0) {
+        return undefined;
+    } else {
+        assert(token.length === 1);
+        assert(token.attr('value'));
+        return token.attr('value');
+    }
+}
+
+async function sellAircraft(aircraftId: string) {
+    const token = await extractToken(aircraftId);
+    if (!token) {
+        return;
+    }
+
+    const sellAircraftFormData = new FormData();
+    sellAircraftFormData.append('form[_token]', token);
+
+    const priceUpdateResp = await fetch(`/aircraft/show/${aircraftId}/sell`, { method: 'POST', body: sellAircraftFormData });
+    if (priceUpdateResp.status !== 200) {
+        updateStatus(aircraftId, false);
+    } else {
+        updateStatus(aircraftId, true);
+    }
+}
+
+function updateStatus(aircraftId: string, successful: boolean) {
+    let line;
+    if (successful) {
+        line = $(`<td><b style="color: red">Sold</b><td>`);
+    } else {
+        line = $(`<td><b style="color: red">Failed</b><td>`);
+    }
+    const position = $(`#${aircraftId}`).parent();
+    line.insertAfter(position);
+}
+
+async function retiredStaff() {
+    const url = '/staff/automatic-retire/aircraft';
+    await fetch(url, { method: 'GET'});
 }
 
 function constructTable(list: Array<AirCraftInfo>): JQuery<HTMLElement> {
@@ -108,7 +180,7 @@ function constructTable(list: Array<AirCraftInfo>): JQuery<HTMLElement> {
     list.forEach((info: AirCraftInfo) => {
         const row = $(isRentalPage ? `
             <tr>
-                <td class="tableString">
+                <td class="tableString" id="aircraft${info.aircraftId}">
                     <b>${info.type} </b>
                 </td>
                 <td><b>${info.hubName} / ${info.hubFlag}</b></td>
@@ -120,11 +192,12 @@ function constructTable(list: Array<AirCraftInfo>): JQuery<HTMLElement> {
                 <td><b>${info.debitDate}</b></td>
                 <td></td>
                 <td><a class="BtnDetailAvionPro" href="${info.detailsUrl}" title="Aircraft details">&nbsp;</a></td>
+                <td><a class="BtnDetailAvionProSell" id="${info.aircraftId}" href="#" title="Sell Aircraft">&nbsp;</a></td>
                 <td></td>
             </tr>
         ` : `
             <tr>
-                <td class="tableString">
+                <td class="tableString" id="aircraft${info.aircraftId}">
                     <b>
                         <img class="zoomAircraft" data-aircraftimg="${info.avatarUrl}" src="/images/icons/picto_zoom.png?v1.6.11">
                         ${info.categoryIcon}
@@ -139,6 +212,7 @@ function constructTable(list: Array<AirCraftInfo>): JQuery<HTMLElement> {
                 <td><b>${info.seats} Pax / ${info.cargo} </b></td>
                 <td>${info.flightResults}</td>
                 <td><a class="BtnDetailAvionPro" href="${info.detailsUrl}" title="Aircraft details">&nbsp;</a></td>
+                <td><a class="BtnDetailAvionProSell" id="${info.aircraftId}" href="#" title="Sell aircraft">&nbsp;</a></td>
             </tr>
         `);
 
@@ -228,8 +302,19 @@ export const aircraftListProDisplay: Plugin = {
         }
 
         // UI tweaks
+        addCssClass();
         $('div.hubFilterBox').css('margin-bottom', 0);
         $('div.aircraftListView').css('margin-top', 0);
         $('div.cleaner').remove();
+
+        $('.BtnDetailAvionProSell').click(function() {
+            console.log('Sell Aircraft Button Clicked');
+            const aircraftId = $(this).attr('id');
+            if (aircraftId) {
+                sellAircraft(aircraftId);
+                retiredStaff();
+            }
+            return false;
+        });
     }
 };
