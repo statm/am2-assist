@@ -1,10 +1,7 @@
 import { Plugin } from '../plugin';
 import { isAMPlus } from '../utils';
 
-async function addButton() {
-    if (await isAMPlus()) {
-        return;
-    }
+function addButton() {
     const button = $(`
         <li class="amCoinsPurchase">
             <div>
@@ -43,11 +40,14 @@ async function collect() {
 export const collectDeliveries: Plugin = {
     name: 'COLLECT DELIVERIES',
     urlPatterns: ['.*'],
-    action: function() {
+    action: async function() {
+        if (await isAMPlus()) {
+            return;
+        }
         addButton();
-        $('#collectButton').on("click", function() {
+        $('#collectButton').on('click', function() {
             collect();
             return false;
-        })
+        });
     }
 };
