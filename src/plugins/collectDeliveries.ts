@@ -31,7 +31,8 @@ async function collect() {
                         console.log('Collecting ' + link + ' failed. Status Code = ' + xhr.status);
                     }
                 });
-                sleep(5);
+                // sleep 5 second, otherwise request will failed.
+                sleep(5000);
             } catch (e) {
                 console.log('error on getting ' + link);
             }
