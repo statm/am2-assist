@@ -206,7 +206,7 @@ function constructTable(list: Array<AirCraftInfo>): JQuery<HTMLElement> {
                 </td>
                 <td><b>${info.hubName} / ${info.hubFlag}</b></td>
                 <td><b>${info.range}</b></td>
-                <td><b>${info.use}</b></td>
+                <td id="aircraftUsage"><b>${info.use}</b></td>
                 <td><b><span>${info.wear}</span></b></td>
                 <td><b>${info.age}</b></td>
                 <td><b>${info.seats} Pax / ${info.cargo} </b></td>
@@ -309,8 +309,11 @@ export const aircraftListProDisplay: Plugin = {
 
         $('.BtnDetailAvionProSell').click(function() {
             console.log('Sell Aircraft Button Clicked');
+            const useage = $(this).parent().parent().find('#aircraftUsage');
+            console.log(useage);
             const aircraftId = $(this).attr('id');
             if (aircraftId) {
+                console.log(aircraftId);
                 sellAircraft(aircraftId);
                 retiredStaff();
             }
