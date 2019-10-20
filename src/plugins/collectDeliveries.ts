@@ -1,5 +1,5 @@
 import { Plugin } from '../plugin';
-import { isAMPlus } from '../utils';
+import { isAMPlus, sleep } from '../utils';
 
 function addButton() {
     const button = $(`
@@ -20,21 +20,24 @@ function addButton() {
 async function collect() {
     console.log('start collecting');
     const b = $('div.date a');
-    const elements: Array<HTMLElement> = [];
     for (let i = 0; i < b.length; i++) {
         if (!b[i].className.includes('hidden')) {
             const link = b[i].getAttribute('href')!;
             try {
-                await $.get(link);
-                elements.push($('#rightInfoBoxContent li')[i]);
+                await $.get(link, function (data, status, xhr) {
+                    if (xhr.status === 200) {
+                        $('#rightInfoBoxContent li')[i].remove();
+                    } else {
+                        console.log('Collecting ' + link + ' failed. Status Code = ' + xhr.status);
+                    }
+                });
+                // sleep 5 second, otherwise request will failed.
+                sleep(5000);
             } catch (e) {
                 console.log('error on getting ' + link);
             }
         }
     }
-    elements.forEach(element => {
-        element.remove();
-    });
 }
 
 export const collectDeliveries: Plugin = {
