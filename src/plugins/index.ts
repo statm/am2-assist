@@ -22,28 +22,28 @@ import { massPricing } from './massPricing';
 import { paxDisplay } from './paxDisplay';
 
 export function registerAllPlugins() {
-    registerPlugin(slotMachineAutomation);
-    registerPlugin(unfoldAgenda);
-    registerPlugin(skipLoadingScreen);
-    registerPlugin(starProgressBar);
-    registerPlugin(enhanceAircraftProfibilityDetail);
-    registerPlugin(reconfigurationAssist);
-    registerPlugin(maximizeLoanAmountFM);
-    registerPlugin(maximizeLoanAmountExpress);
-    registerPlugin(pricePerSeat);
-    registerPlugin(aircraftPurchaseListStickyHeader);
-    registerPlugin(duperSim);
-    registerPlugin(routePurchaseListStickyHeader);
-    registerPlugin(auditPriceApplying);
-    registerPlugin(auditListEnhancement);
-    registerPlugin(aircraftListProDisplay);
-    registerPlugin(routeListProDisplay);
-    registerPlugin(workshopScan);
-    registerPlugin(collectDeliveries);
-    registerPlugin(massPricing);
-    registerPlugin(paxDisplay);
+  registerPlugin(slotMachineAutomation);
+  registerPlugin(unfoldAgenda);
+  registerPlugin(skipLoadingScreen);
+  registerPlugin(starProgressBar);
+  registerPlugin(enhanceAircraftProfibilityDetail);
+  registerPlugin(reconfigurationAssist);
+  registerPlugin(maximizeLoanAmountFM);
+  registerPlugin(maximizeLoanAmountExpress);
+  registerPlugin(pricePerSeat);
+  registerPlugin(aircraftPurchaseListStickyHeader);
+  registerPlugin(duperSim);
+  registerPlugin(routePurchaseListStickyHeader);
+  registerPlugin(auditPriceApplying);
+  registerPlugin(auditListEnhancement);
+  registerPlugin(aircraftListProDisplay);
+  registerPlugin(routeListProDisplay);
+  registerPlugin(workshopScan);
+  registerPlugin(collectDeliveries);
+  registerPlugin(massPricing);
+  registerPlugin(paxDisplay);
 
-    // dev purpose only
-    // registerPlugin(playerDataCollection);
-    // registerPlugin(aircraftInfoCollection);
+  // dev purpose only
+  // registerPlugin(playerDataCollection);
+  // registerPlugin(aircraftInfoCollection);
 }
