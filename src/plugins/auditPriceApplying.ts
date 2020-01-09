@@ -23,7 +23,7 @@ export const auditPriceApplying: Plugin = {
         $('#applyIdealPricesButton, a.marketing_PriceLink').wrapAll(`<div/>`);
 
         $('#applyIdealPricesButton').click(function() {
-            if (!$('.reliability0').text().startsWith('Recent')) {
+            if (!$('.reliability0').text().startsWith('Reliable')) {
                 if (!confirm('Audit result is not up to date, continue?')) {
                     return;
                 }
