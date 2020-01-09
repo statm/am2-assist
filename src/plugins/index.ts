@@ -2,7 +2,6 @@ import { registerPlugin } from '../plugin';
 
 import { skipLoadingScreen } from './skipLoadingScreen';
 import { slotMachineAutomation } from './slotMachineAutomation';
-import { unfoldAgenda } from './unfoldAgenda';
 import { starProgressBar } from './starProgressBar';
 import { enhanceAircraftProfibilityDetail } from './aircraftProfibilityDetail';
 import { reconfigurationAssist } from './reconfigurationAssist';
@@ -23,7 +22,6 @@ import { paxDisplay } from './paxDisplay';
 
 export function registerAllPlugins() {
   registerPlugin(slotMachineAutomation);
-  registerPlugin(unfoldAgenda);
   registerPlugin(skipLoadingScreen);
   registerPlugin(starProgressBar);
   registerPlugin(enhanceAircraftProfibilityDetail);
@@ -42,6 +40,9 @@ export function registerAllPlugins() {
   registerPlugin(collectDeliveries);
   registerPlugin(massPricing);
   registerPlugin(paxDisplay);
+
+  // disabled
+  // registerPlugin(unfoldAgenda); // For shorter home page
 
   // dev purpose only
   // registerPlugin(playerDataCollection);
