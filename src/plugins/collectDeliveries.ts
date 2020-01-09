@@ -1,5 +1,5 @@
 import { Plugin } from '../plugin';
-import { isAMPlus, sleep } from '../utils';
+import { isAMPlus, sleep, assert } from '../utils';
 
 function addButton() {
   const button = $(`
@@ -17,27 +17,48 @@ function addButton() {
   $('li.deliverAll').remove();
 }
 
+let isCollecting = false;
+
 async function collect() {
-  console.log('start collecting');
-  const b = $('div.date a');
-  for (let i = 0; i < b.length; i++) {
-    if (!b[i].className.includes('hidden')) {
-      const link = b[i].getAttribute('href')!;
-      try {
-        await $.get(link, function(data, status, xhr) {
-          if (xhr.status === 200) {
-            $('#rightInfoBoxContent li')[i].remove();
-          } else {
-            console.log('Collecting ' + link + ' failed. Status Code = ' + xhr.status);
-          }
-        });
-        // sleep 5 seconds, otherwise request will fail.
-        await sleep(5000);
-      } catch (e) {
-        console.log('error on getting ' + link);
-      }
-    }
+  if (isCollecting) {
+    return;
   }
+  isCollecting = true;
+
+  const infoBoxElements = $('ul#rightInfoBoxContent li:not([class])').filter(function() {
+    return !$(this)
+      .find('div.date a')
+      .is('.hidden');
+  });
+
+  // Add spinners to all items
+  infoBoxElements
+    .find('div.date')
+    .append('<img class="statusIcon" src="//i.imgur.com/pDMku5j.gif" width="16" height="16"/>');
+
+  // Start collecting
+  for (let i = 0; i < infoBoxElements.length; i++) {
+    const item = $(infoBoxElements[i]);
+    if (item.find('div.date a').is('.hidden')) {
+      continue;
+    }
+    const link = item.find('div.date a').attr('href')!;
+    assert(link);
+
+    // Update status icon
+    const resp = await fetch(link);
+    item
+      .find('div.date img.statusIcon')
+      .attr('src', resp.status === 200 ? '//i.imgur.com/5A3tGvf.png' : '//i.imgur.com/9jIoF80.jpg');
+
+    // Wait for 5 seconds otherwise next request will fail
+    await sleep(5000);
+  }
+
+  // Remove collected items from UI
+  infoBoxElements.fadeOut(function() {
+    isCollecting = false;
+  });
 }
 
 export const collectDeliveries: Plugin = {
@@ -48,9 +69,9 @@ export const collectDeliveries: Plugin = {
       return;
     }
     addButton();
-    $('#collectButton').on('click', function() {
-      collect();
-      return false;
+    $('#collectButton').on('click', async function(e) {
+      e.preventDefault();
+      await collect();
     });
   },
 };
