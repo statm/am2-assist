@@ -7,7 +7,7 @@ let isClaiming = false;
 let freeItems: Array<WorkshopItem> = [];
 
 function addScanPanel() {
-    $(`
+  $(`
         <style type="text/css">
             #wsScan { text-align: center }
             #wsControls { padding: 10px 0 }
@@ -38,7 +38,7 @@ function addScanPanel() {
         </style>
     `).appendTo('head');
 
-    const scanPanel = $(`
+  const scanPanel = $(`
         <div id="wsScan">
             <div id="wsControls">
                 <label for="wsFromBox">From</label>
@@ -67,35 +67,35 @@ function addScanPanel() {
             </div>
         </div>
     `);
-    scanPanel.insertBefore('div.workshop div.header');
-    $('div.workshop div.header').remove();
+  scanPanel.insertBefore('div.workshop div.header');
+  $('div.workshop div.header').remove();
 }
 
 async function scan() {
-    const fromId = getIntFromString($('#wsFromBox').val() as string);
-    const toId = getIntFromString($('#wsToBox').val() as string);
-    assert(!isNaN(fromId) && !isNaN(toId) && fromId <= toId);
+  const fromId = getIntFromString($('#wsFromBox').val() as string);
+  const toId = getIntFromString($('#wsToBox').val() as string);
+  assert(!isNaN(fromId) && !isNaN(toId) && fromId <= toId);
 
-    if (isScanning || isClaiming) {
-        return;
-    }
-    isScanning = true;
-    freeItems = [];
+  if (isScanning || isClaiming) {
+    return;
+  }
+  isScanning = true;
+  freeItems = [];
 
-    const progressBar = $('#wsProgressBar');
-    const progressBarFill = $('#wsProgressBarFill');
-    progressBar.slideDown();
-    progressBarFill.width(0);
+  const progressBar = $('#wsProgressBar');
+  const progressBarFill = $('#wsProgressBarFill');
+  progressBar.slideDown();
+  progressBarFill.width(0);
 
-    const resultTable = $('#wsResultTable tbody');
-    resultTable.empty();
+  const resultTable = $('#wsResultTable tbody');
+  resultTable.empty();
 
-    for await (const progress of loadWorkshopInfo(fromId, toId)) {
-        const percentage = (progress.id - fromId + 1) / (toId - fromId + 1) * 100;
-        progressBarFill.animate({ width: `${percentage}%` }, { duration: 'fast' });
+  for await (const progress of loadWorkshopInfo(fromId, toId)) {
+    const percentage = ((progress.id - fromId + 1) / (toId - fromId + 1)) * 100;
+    progressBarFill.animate({ width: `${percentage}%` }, { duration: 'fast' });
 
-        if (progress.item !== undefined) {
-            const resultRow = $(`
+    if (progress.item !== undefined) {
+      const resultRow = $(`
                 <tr${progress.item.price === 0 ? ' class="freeItem"' : ''}>
                     <td id="wsStatus${progress.item.id}" class="colStatus"></td>
                     <td class="colId">${progress.item.id}</td>
@@ -108,71 +108,71 @@ async function scan() {
                     </td>
                 </tr>
             `);
-            resultRow.appendTo(resultTable);
+      resultRow.appendTo(resultTable);
 
-            if (progress.item.price === 0) {
-                freeItems.push(progress.item);
-            }
-        }
+      if (progress.item.price === 0) {
+        freeItems.push(progress.item);
+      }
     }
+  }
 
-    progressBar.delay(500).slideUp();
-    isScanning = false;
+  progressBar.delay(500).slideUp();
+  isScanning = false;
 }
 
 async function claimItem(id: number) {
-    const statusBox = $(`#wsStatus${id}`);
+  const statusBox = $(`#wsStatus${id}`);
 
-    try {
-        const pageStr = await $.get(`/shop/enablebonus/${id}`);
-        const page = $($.parseHTML(pageStr));
-        const form = page.find('form');
-        assert(form.length === 1);
+  try {
+    const pageStr = await $.get(`/shop/enablebonus/${id}`);
+    const page = $($.parseHTML(pageStr));
+    const form = page.find('form');
+    assert(form.length === 1);
 
-        // tslint:disable-next-line:no-any
-        const postObj: any = {};
-        form.serializeArray().forEach(entry => postObj[entry.name] = entry.value);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const postObj: any = {};
+    form.serializeArray().forEach(entry => (postObj[entry.name] = entry.value));
 
-        await $.post(`/shop/enablebonus/${id}`, postObj);
+    await $.post(`/shop/enablebonus/${id}`, postObj);
 
-        statusBox.empty().prepend($(`<img src="//i.imgur.com/5A3tGvf.png" width="14" height="14"/>`));
-    } catch (e) {
-        statusBox.empty().prepend($(`<img src="//i.imgur.com/9jIoF80.jpg" width="14" height="14"/>`));
-    }
+    statusBox.empty().prepend($(`<img src="//i.imgur.com/5A3tGvf.png" width="14" height="14"/>`));
+  } catch (e) {
+    statusBox.empty().prepend($(`<img src="//i.imgur.com/9jIoF80.jpg" width="14" height="14"/>`));
+  }
 }
 
 async function claim() {
-    if (isScanning || isClaiming || freeItems.length === 0) {
-        return;
-    }
-    isClaiming = true;
+  if (isScanning || isClaiming || freeItems.length === 0) {
+    return;
+  }
+  isClaiming = true;
 
-    for (const item of freeItems) {
-        const statusBox = $(`#wsStatus${item.id}`);
-        statusBox.empty().prepend($(`<img src="//i.imgur.com/pDMku5j.gif" width="16" height="16"/>`));
-    }
+  for (const item of freeItems) {
+    const statusBox = $(`#wsStatus${item.id}`);
+    statusBox.empty().prepend($(`<img src="//i.imgur.com/pDMku5j.gif" width="16" height="16"/>`));
+  }
 
-    for (const item of freeItems) {
-        await claimItem(item.id);
-        await sleep(5000);
-    }
+  for (const item of freeItems) {
+    await claimItem(item.id);
+    await sleep(5000);
+  }
 
-    freeItems = [];
-    isClaiming = false;
+  freeItems = [];
+  isClaiming = false;
 }
 
 export const workshopScan: Plugin = {
-    name: 'WORKSHOP SCAN',
-    urlPatterns: ['shop/workshop[^/]*'],
-    action: function() {
-        addScanPanel();
-        $('#wsToBox').on('keypress', function (e) {
-            if (e.keyCode === 13) {
-                scan();
-                return false;
-            }
-        });
-        $('#wsScanButton').on('click', scan);
-        $('#wsClaimButton').on('click', claim);
-    }
+  name: 'WORKSHOP SCAN',
+  urlPatterns: ['shop/workshop[^/]*'],
+  action: function() {
+    addScanPanel();
+    $('#wsToBox').on('keypress', function(e) {
+      if (e.keyCode === 13) {
+        scan();
+        return false;
+      }
+    });
+    $('#wsScanButton').on('click', scan);
+    $('#wsClaimButton').on('click', claim);
+  },
 };
