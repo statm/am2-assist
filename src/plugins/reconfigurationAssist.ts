@@ -150,7 +150,7 @@ export const reconfigurationAssist: Plugin = {
                             <span class="pax-box ${getPaxTextClass(paxData.first)}">${
             paxData.first
           }</span>
-                            <span class="pax-box ${getPaxTextClass(paxData.cargo)}'>${
+                            <span class="pax-box ${getPaxTextClass(paxData.cargo)}">${
             paxData.cargo
           }T</span>
                         </div>
