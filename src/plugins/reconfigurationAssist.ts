@@ -11,14 +11,17 @@ declare global {
   const AircraftConfiguration: AircraftConfigurationStatic;
 }
 
+let reconfigInProgress = false;
+
 function reconfigAircraft(paxData: PaxData) {
+  // Disable config bar animation. Re-enable after sliders are set.
+  jQuery.fx.off = true;
+  reconfigInProgress = true;
+
   const eco = Math.max(paxData.eco, 0);
   const bus = Math.max(paxData.bus, 0);
   const first = Math.max(paxData.first, 0);
   const totalPax = getPax(eco, bus, first);
-
-  // Disable config bar animation. Re-enable after sliders are set.
-  jQuery.fx.off = true;
 
   $('#sliderEco').slider('value', 0);
   $('#sliderBus').slider('value', 0);
@@ -44,6 +47,7 @@ function reconfigAircraft(paxData: PaxData) {
   $('#sliderEco').slider('value', AircraftConfiguration.getSeatsEcoMax());
 
   jQuery.fx.off = false;
+  reconfigInProgress = false;
 }
 
 export const reconfigurationAssist: Plugin = {
@@ -65,6 +69,7 @@ export const reconfigurationAssist: Plugin = {
                 .pax-box { width: 36px; font-weight: bold }
                 .num-pos { color: #8ecb47 }
                 .num-neg { color: #da4e28 }
+                .ra-cursor { width: 5px; height: 10px; background: no-repeat left center url(/images/interface/gray_arrow2.png) }
             </style>
         `).appendTo('head');
 
@@ -180,6 +185,7 @@ export const reconfigurationAssist: Plugin = {
           const paxData = paxSeg.pax;
           const paxBox = $(`
                         <div class="pax-line">
+                            <span class="ra-cursor" style="visibility:hidden"></span>
                             <span class="day-box">${dayText}</span>
                             <span class="pax-box ${getPaxTextClass(paxData.eco)}">${
             paxData.eco
@@ -196,6 +202,10 @@ export const reconfigurationAssist: Plugin = {
                         </div>
                     `);
           paxBox.on('click', function() {
+            $('span.ra-cursor').css('visibility', 'hidden');
+            $(this)
+              .find('span.ra-cursor')
+              .css('visibility', 'visible');
             reconfigAircraft(paxData);
           });
 
@@ -207,5 +217,13 @@ export const reconfigurationAssist: Plugin = {
 
     displayRelevantRoutes();
     $('#aircraft_hub').change(displayRelevantRoutes);
+
+    // Remove cursors on user change
+    $('#sliderEco, #sliderBus, #sliderFirst, #sliderCargo').on('slidechange', function() {
+      if (reconfigInProgress) {
+        return;
+      }
+      $('span.ra-cursor').css('visibility', 'hidden');
+    });
   },
 };
