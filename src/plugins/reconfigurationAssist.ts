@@ -1,10 +1,50 @@
 import { Plugin } from '../plugin';
 import { PAGE_URL, DAYS_SHORT } from '../constants';
 import { loadNetworkData } from '../ajax/loadNetworkData';
-import { getIntFromElement, getFlightDuration, getIntFromString } from '../utils';
+import { getIntFromElement, getFlightDuration, getIntFromString, getPax } from '../utils';
+import { PaxData, AircraftConfigurationStatic } from '../typings';
 
 // TODO: wrong layout with cargo aircrafts
 // TODO: reload button on loadNetworkData failure (5 sec)
+
+declare global {
+  const AircraftConfiguration: AircraftConfigurationStatic;
+}
+
+function reconfigAircraft(paxData: PaxData) {
+  const eco = Math.max(paxData.eco, 0);
+  const bus = Math.max(paxData.bus, 0);
+  const first = Math.max(paxData.first, 0);
+  const totalPax = getPax(eco, bus, first);
+
+  // Disable config bar animation. Re-enable after sliders are set.
+  jQuery.fx.off = true;
+
+  $('#sliderEco').slider('value', 0);
+  $('#sliderBus').slider('value', 0);
+  $('#sliderFirst').slider('value', 0);
+  $('#sliderCargo').slider('value', 0);
+
+  if (AircraftConfiguration.maxSeats >= totalPax) {
+    // Fill
+    $('#sliderEco').slider('value', eco);
+    $('#sliderBus').slider('value', bus);
+    $('#sliderFirst').slider('value', first);
+    $('#sliderCargo').slider('value', AircraftConfiguration.getWeightEmpty());
+  } else {
+    // Ratio
+    const ratio = AircraftConfiguration.maxSeats / totalPax;
+    $('#sliderEco').slider('value', Math.ceil(eco * ratio));
+    $('#sliderBus').slider('value', Math.ceil(bus * ratio));
+    $('#sliderFirst').slider('value', Math.ceil(first * ratio));
+    $('#sliderCargo').slider('value', AircraftConfiguration.getWeightEmpty());
+  }
+
+  // If there's still *any* space, fill with eco.
+  $('#sliderEco').slider('value', AircraftConfiguration.getSeatsEcoMax());
+
+  jQuery.fx.off = false;
+}
 
 export const reconfigurationAssist: Plugin = {
   name: 'RECONFIGURATION ASSIST',
@@ -19,7 +59,7 @@ export const reconfigurationAssist: Plugin = {
                 .route-title { width: 100%; height: 23px; display: flex; align-items: center; background-color: #bde9ff; color: #585d69 }
                 .route-name { font-weight: bold; padding-left: 5px }
                 .route-dist { flex: 1; text-align: right; font-weight: bold; padding-right: 5px }
-                .pax-line { display: flex; align-items: center; padding: 4px 5px }
+                .pax-line { display: flex; align-items: center; padding: 4px 5px; cursor: pointer }
                 .pax-line span { display: inline-block; text-align: right }
                 .day-box { width: 58px; margin-right: 4px; color: #585d69 }
                 .pax-box { width: 36px; font-weight: bold }
@@ -44,7 +84,7 @@ export const reconfigurationAssist: Plugin = {
 
     const networkData = await loadNetworkData();
 
-    const displayRelevantRoutes = function() {
+    function displayRelevantRoutes() {
       let currentAircraftSpeed: number;
       let currentAircraftRange: number;
       let currentAircraftCategory: number;
@@ -155,11 +195,15 @@ export const reconfigurationAssist: Plugin = {
           }T</span>
                         </div>
                     `);
+          paxBox.on('click', function() {
+            reconfigAircraft(paxData);
+          });
+
           reconfigBox.append(paxBox);
         });
       });
       reconfigBox.scrollTop(0);
-    };
+    }
 
     displayRelevantRoutes();
     $('#aircraft_hub').change(displayRelevantRoutes);

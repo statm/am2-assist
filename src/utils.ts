@@ -81,3 +81,7 @@ export async function isAMPlus() {
 export function getPax(eco: number, bus: number, first: number) {
   return Math.ceil(eco + 1.8 * bus + 4.2 * first);
 }
+
+export function getTonnage(eco: number, bus: number, first: number, cargo: number) {
+  return eco * 0.1 + bus * 0.125 + first * 0.15 + cargo;
+}

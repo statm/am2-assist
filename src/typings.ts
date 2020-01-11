@@ -96,3 +96,10 @@ export type NetworkData = {
   routeMap: { [id: number]: RouteData };
   flightParameters: FlightParameters;
 };
+
+export interface AircraftConfigurationStatic {
+  maxSeats: number;
+  payLoad: number;
+  getWeightEmpty(): number;
+  getSeatsEcoMax(): number;
+}
