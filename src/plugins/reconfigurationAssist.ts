@@ -34,9 +34,9 @@ function reconfigAircraft(paxData: PaxData) {
   } else {
     // Ratio
     const ratio = AircraftConfiguration.maxSeats / seatsNeeded;
-    $('#sliderEco').slider('value', Math.ceil(eco * ratio));
-    $('#sliderBus').slider('value', Math.ceil(bus * ratio));
-    $('#sliderFirst').slider('value', Math.ceil(first * ratio));
+    $('#sliderEco').slider('value', Math.ceil((eco * ratio) / 2));
+    $('#sliderBus').slider('value', Math.round((bus * ratio) / 2));
+    $('#sliderFirst').slider('value', Math.round((first * ratio) / 2));
     $('#sliderCargo').slider('value', AircraftConfiguration.getWeightEmpty());
   }
 
