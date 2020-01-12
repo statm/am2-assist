@@ -18,14 +18,14 @@ function reconfigAircraft(paxData: PaxData) {
   const eco = Math.max(paxData.eco, 0);
   const bus = Math.max(paxData.bus, 0);
   const first = Math.max(paxData.first, 0);
-  const totalPax = getPax(eco, bus, first);
+  const seatsNeeded = getPax(eco, bus, first) / 2;
 
   $('#sliderEco').slider('value', 0);
   $('#sliderBus').slider('value', 0);
   $('#sliderFirst').slider('value', 0);
   $('#sliderCargo').slider('value', 0);
 
-  if (AircraftConfiguration.maxSeats >= totalPax) {
+  if (AircraftConfiguration.maxSeats >= seatsNeeded) {
     // Fill
     $('#sliderEco').slider('value', eco);
     $('#sliderBus').slider('value', bus);
@@ -33,7 +33,7 @@ function reconfigAircraft(paxData: PaxData) {
     $('#sliderCargo').slider('value', AircraftConfiguration.getWeightEmpty());
   } else {
     // Ratio
-    const ratio = AircraftConfiguration.maxSeats / totalPax;
+    const ratio = AircraftConfiguration.maxSeats / seatsNeeded;
     $('#sliderEco').slider('value', Math.ceil(eco * ratio));
     $('#sliderBus').slider('value', Math.ceil(bus * ratio));
     $('#sliderFirst').slider('value', Math.ceil(first * ratio));

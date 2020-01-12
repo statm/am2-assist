@@ -9,6 +9,6 @@ export const aircraftPurchaseListStickyHeader: Plugin = {
         `);
     $('.filterBox').before(filterAndWitnessBox);
     $('.filterBox, .witnessLine').appendTo(filterAndWitnessBox);
-    $('#lineListSelect').css('max-width: 440px');
+    $('#lineListSelect').css('max-width', 440);
   },
 };
